@@ -1,0 +1,2 @@
+/usr/bin/ar cr libcommon.a  CMakeFiles/common.dir/controls.cpp.o CMakeFiles/common.dir/loadShader.cpp.o CMakeFiles/common.dir/objloader.cpp.o CMakeFiles/common.dir/texture.cpp.o
+/usr/bin/ranlib libcommon.a

@@ -1,0 +1,1 @@
+/usr/bin/c++   -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/OpenGLTemplate/common.dir/controls.cpp.o CMakeFiles/OpenGLTemplate/common.dir/loadShader.cpp.o CMakeFiles/OpenGLTemplate/common.dir/objloader.cpp.o CMakeFiles/OpenGLTemplate/common.dir/texture.cpp.o  -o OpenGLTemplate/common  
