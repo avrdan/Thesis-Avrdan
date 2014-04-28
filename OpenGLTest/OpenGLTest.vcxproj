@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BDE58C2C-5CE6-45F4-B3A2-3687DE630C7F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>OpenGLTest</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="GLM.props" />
+    <Import Project="GLEW110-32bit.props" />
+    <Import Project="GLFW3_32bit.props" />
+    <Import Project="ASSIMP.props" />
+    <Import Project="FreeImage.props" />
+    <Import Project="PCSDK_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="GLM.props" />
+    <Import Project="GLEW110-32bit.props" />
+    <Import Project="GLFW3_32bit.props" />
+    <Import Project="PCSDK_Debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="assimpScene.cpp" />
+    <ClCompile Include="common\assimpModel.cpp" />
+    <ClCompile Include="common\camera.cpp" />
+    <ClCompile Include="common\controls.cpp" />
+    <ClCompile Include="common\loadShader.cpp" />
+    <ClCompile Include="common\pipeline.cpp" />
+    <ClCompile Include="common\skybox.cpp" />
+    <ClCompile Include="common\texture.cpp" />
+    <ClCompile Include="common\vertexBufferObject.cpp" />
+    <ClCompile Include="frameBuffersScene.cpp" />
+    <ClCompile Include="GeometryShaderScene.cpp" />
+    <ClCompile Include="GLFWTest.cpp" />
+    <ClCompile Include="heightMapScene.cpp" />
+    <ClCompile Include="lightingScene.cpp" />
+    <ClCompile Include="MarchingCubes.cpp" />
+    <ClCompile Include="MarchingCubesScene.cpp" />
+    <ClCompile Include="PointCloudScene.cpp" />
+    <ClCompile Include="projTextureMappingScene.cpp" />
+    <ClCompile Include="PTMTestScene.cpp" />
+    <ClCompile Include="pyramidScene.cpp" />
+    <ClCompile Include="RawDepthPipeline.cpp" />
+    <ClCompile Include="shadowMappingScene.cpp" />
+    <ClCompile Include="simpleScene.cpp" />
+    <ClCompile Include="static_geometry.cpp" />
+    <ClCompile Include="textureScene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="assimpScene.h" />
+    <ClInclude Include="common\assimpModel.h" />
+    <ClInclude Include="common\camera.h" />
+    <ClInclude Include="common\controls.h" />
+    <ClInclude Include="common\loadShader.h" />
+    <ClInclude Include="common\pipeline.h" />
+    <ClInclude Include="common\skybox.h" />
+    <ClInclude Include="common\texture.h" />
+    <ClInclude Include="common\vertexBufferObject.h" />
+    <ClInclude Include="frameBuffersScene.h" />
+    <ClInclude Include="GeometryShaderScene.h" />
+    <ClInclude Include="heightMapScene.h" />
+    <ClInclude Include="lightingScene.h" />
+    <ClInclude Include="MarchingCubes.h" />
+    <ClInclude Include="MarchingCubesScene.h" />
+    <ClInclude Include="PointCloudScene.h" />
+    <ClInclude Include="projTextureMappingScene.h" />
+    <ClInclude Include="PTMTestScene.h" />
+    <ClInclude Include="pyramidScene.h" />
+    <ClInclude Include="RawDepthPipeline.h" />
+    <ClInclude Include="shadowMappingScene.h" />
+    <ClInclude Include="simpleScene.h" />
+    <ClInclude Include="static_geometry.h" />
+    <ClInclude Include="textureScene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\color.frag" />
+    <None Include="assets\shaders\color.vert" />
+    <None Include="assets\shaders\dirLight.frag" />
+    <None Include="assets\shaders\dirLight.vert" />
+    <None Include="assets\shaders\geometry.frag" />
+    <None Include="assets\shaders\geometry.geom" />
+    <None Include="assets\shaders\geometry.vert" />
+    <None Include="assets\shaders\marchingCubes.frag" />
+    <None Include="assets\shaders\marchingCubes.geom" />
+    <None Include="assets\shaders\marchingCubes.vert" />
+    <None Include="assets\shaders\passthrough.vert" />
+    <None Include="assets\shaders\post_process.frag" />
+    <None Include="assets\shaders\post_process.vert" />
+    <None Include="assets\shaders\pre_process.frag" />
+    <None Include="assets\shaders\pre_process.vert" />
+    <None Include="assets\shaders\ptm.frag" />
+    <None Include="assets\shaders\ptm.vert" />
+    <None Include="assets\shaders\shader.frag" />
+    <None Include="assets\shaders\shader.vert" />
+    <None Include="assets\shaders\shader_hm.frag" />
+    <None Include="assets\shaders\shader_hm.vert" />
+    <None Include="assets\shaders\shader_ptm.frag" />
+    <None Include="assets\shaders\shader_ptm.vert" />
+    <None Include="assets\shaders\shader_tex.frag" />
+    <None Include="assets\shaders\shader_tex.vert" />
+    <None Include="assets\shaders\depthRTT.frag" />
+    <None Include="assets\shaders\depthRTT.vert" />
+    <None Include="assets\shaders\shadow_map.frag" />
+    <None Include="assets\shaders\shadow_map.vert" />
+    <None Include="assets\shaders\simple.frag" />
+    <None Include="assets\shaders\simple.vert" />
+    <None Include="assets\shaders\simpleTexture.frag" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
