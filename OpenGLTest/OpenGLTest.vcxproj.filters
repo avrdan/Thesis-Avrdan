@@ -90,6 +90,9 @@
     <ClCompile Include="MarchingCubes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PCLReconstructionScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simpleScene.h">
@@ -164,6 +167,9 @@
     <ClInclude Include="MarchingCubes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PCLReconstructionScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\shader.vert" />
@@ -198,5 +204,7 @@
     <None Include="assets\shaders\marchingCubes.frag" />
     <None Include="assets\shaders\marchingCubes.geom" />
     <None Include="assets\shaders\marchingCubes.vert" />
+    <None Include="assets\shaders\dirLight_simple.frag" />
+    <None Include="assets\shaders\dirLight_simple.vert" />
   </ItemGroup>
 </Project>

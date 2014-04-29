@@ -40,6 +40,7 @@
     <Import Project="ASSIMP.props" />
     <Import Project="FreeImage.props" />
     <Import Project="PCSDK_Debug.props" />
+    <Import Project="PCL32_Debug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -62,11 +63,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,6 +107,7 @@
     <ClCompile Include="lightingScene.cpp" />
     <ClCompile Include="MarchingCubes.cpp" />
     <ClCompile Include="MarchingCubesScene.cpp" />
+    <ClCompile Include="PCLReconstructionScene.cpp" />
     <ClCompile Include="PointCloudScene.cpp" />
     <ClCompile Include="projTextureMappingScene.cpp" />
     <ClCompile Include="PTMTestScene.cpp" />
@@ -130,6 +134,7 @@
     <ClInclude Include="lightingScene.h" />
     <ClInclude Include="MarchingCubes.h" />
     <ClInclude Include="MarchingCubesScene.h" />
+    <ClInclude Include="PCLReconstructionScene.h" />
     <ClInclude Include="PointCloudScene.h" />
     <ClInclude Include="projTextureMappingScene.h" />
     <ClInclude Include="PTMTestScene.h" />
@@ -145,6 +150,8 @@
     <None Include="assets\shaders\color.vert" />
     <None Include="assets\shaders\dirLight.frag" />
     <None Include="assets\shaders\dirLight.vert" />
+    <None Include="assets\shaders\dirLight_simple.frag" />
+    <None Include="assets\shaders\dirLight_simple.vert" />
     <None Include="assets\shaders\geometry.frag" />
     <None Include="assets\shaders\geometry.geom" />
     <None Include="assets\shaders\geometry.vert" />

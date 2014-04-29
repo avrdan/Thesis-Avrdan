@@ -30,6 +30,7 @@
 #include "PointCloudScene.h"
 #include "GeometryShaderScene.h"
 #include "MarchingCubesScene.h"
+#include "PCLReconstructionScene.h"
 
 //#include <Windows.h>
 
@@ -107,7 +108,8 @@ int wmain(int argc, WCHAR* argv[])
 	//scene = new PTMTestScene();
 	//scene = new PointCloudScene();
 	//scene = new GeometryShaderScene();
-	scene = new MarchingCubesScene();
+	//scene = new MarchingCubesScene();
+	scene = new PCLReconstructionScene();
 
 	scene->initScene(window);
 

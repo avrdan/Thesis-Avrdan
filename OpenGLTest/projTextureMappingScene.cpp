@@ -587,20 +587,6 @@ void ProjTextureMappingScene::computeFrustumCoords(glm::mat4 mProjection)
 	glm::vec3 ntr = glm::vec3(+1, +1, pNear); //near top right
 
 	glm::vec3	frustum_coords[36] = {
-		/*
-		//near
-		glm::vec3(-1, -1, pNear), glm::vec3(+1, +1, pNear), glm::vec3(-1, +1, pNear),
-		glm::vec3(+1, +1, pNear), glm::vec3(-1, -1, pNear), glm::vec3(+1, -1, pNear),
-		//far
-		glm::vec3(-1, -1, pFar), glm::vec3(+1, +1, pFar), glm::vec3(-1, +1, pFar),
-		glm::vec3(+1, +1, pFar), glm::vec3(-1, -1, pFar), glm::vec3(+1, -1, pFar),
-		// left
-		nbl, ftl, ntl,
-		ftl, nbl, fbl,
-		// right
-		// bottom
-		// top
-		*/
 		// near
 		ntl, nbl, ntr, // 1 triangle (9 verts)
 		ntr, nbl, nbr,
