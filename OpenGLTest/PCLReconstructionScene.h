@@ -1,5 +1,6 @@
 #pragma once
 #include "simpleScene.h"
+#include "PCLGreedyReconstruction.h"
 class PCLReconstructionScene :
 	public AbstractScene
 {
@@ -12,6 +13,7 @@ public:
 	void releaseScene();
 private:
 	VertexBufferObject vboSceneObjects;
+	VertexBufferObject ibo;
 	GLuint uiVAO; // Only one VAO now
 	GLuint programID;
 	GLuint programIDTex;
@@ -30,5 +32,6 @@ private:
 	Pipeline *pipeline;
 	Skybox skybox;
 
+	PCLGreedyReconstruction pclGR;
 };
 

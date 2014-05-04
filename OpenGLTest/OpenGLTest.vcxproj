@@ -61,7 +61,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -104,10 +104,23 @@
     <ClCompile Include="GeometryShaderScene.cpp" />
     <ClCompile Include="GLFWTest.cpp" />
     <ClCompile Include="heightMapScene.cpp" />
+    <ClCompile Include="HPMCScene.cpp" />
+    <ClCompile Include="hpmc\src\buildpass.cpp" />
+    <ClCompile Include="hpmc\src\constants.cpp" />
+    <ClCompile Include="hpmc\src\hpiface.cpp" />
+    <ClCompile Include="hpmc\src\init.cpp" />
+    <ClCompile Include="hpmc\src\shaderbuild.cpp" />
+    <ClCompile Include="hpmc\src\shadergen.cpp" />
+    <ClCompile Include="hpmc\src\tables.cpp" />
+    <ClCompile Include="hpmc\src\texfbosetup.cpp" />
+    <ClCompile Include="hpmc\src\triface.cpp" />
+    <ClCompile Include="hpmc\src\util.cpp" />
     <ClCompile Include="lightingScene.cpp" />
     <ClCompile Include="MarchingCubes.cpp" />
     <ClCompile Include="MarchingCubesScene.cpp" />
+    <ClCompile Include="PCLGreedyReconstruction.cpp" />
     <ClCompile Include="PCLReconstructionScene.cpp" />
+    <ClCompile Include="PointCloudPCLScene.cpp" />
     <ClCompile Include="PointCloudScene.cpp" />
     <ClCompile Include="projTextureMappingScene.cpp" />
     <ClCompile Include="PTMTestScene.cpp" />
@@ -131,10 +144,15 @@
     <ClInclude Include="frameBuffersScene.h" />
     <ClInclude Include="GeometryShaderScene.h" />
     <ClInclude Include="heightMapScene.h" />
+    <ClInclude Include="HPMCScene.h" />
+    <ClInclude Include="hpmc\include\hpmc.h" />
+    <ClInclude Include="hpmc\include\hpmc_internal.h" />
     <ClInclude Include="lightingScene.h" />
     <ClInclude Include="MarchingCubes.h" />
     <ClInclude Include="MarchingCubesScene.h" />
+    <ClInclude Include="PCLGreedyReconstruction.h" />
     <ClInclude Include="PCLReconstructionScene.h" />
+    <ClInclude Include="PointCloudPCLScene.h" />
     <ClInclude Include="PointCloudScene.h" />
     <ClInclude Include="projTextureMappingScene.h" />
     <ClInclude Include="PTMTestScene.h" />
@@ -146,6 +164,7 @@
     <ClInclude Include="textureScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\pcl\bun0.pcd" />
     <None Include="assets\shaders\color.frag" />
     <None Include="assets\shaders\color.vert" />
     <None Include="assets\shaders\dirLight.frag" />
@@ -155,6 +174,9 @@
     <None Include="assets\shaders\geometry.frag" />
     <None Include="assets\shaders\geometry.geom" />
     <None Include="assets\shaders\geometry.vert" />
+    <None Include="assets\shaders\hpmc_th_flat.vert" />
+    <None Include="assets\shaders\hpmc_th_shaded.frag" />
+    <None Include="assets\shaders\hpmc_th_shaded.vert" />
     <None Include="assets\shaders\marchingCubes.frag" />
     <None Include="assets\shaders\marchingCubes.geom" />
     <None Include="assets\shaders\marchingCubes.vert" />
@@ -180,6 +202,7 @@
     <None Include="assets\shaders\simple.frag" />
     <None Include="assets\shaders\simple.vert" />
     <None Include="assets\shaders\simpleTexture.frag" />
+    <None Include="assets\volume\bonsai.raw" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

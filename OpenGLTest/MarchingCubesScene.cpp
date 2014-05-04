@@ -77,7 +77,7 @@ void MarchingCubesScene::initScene(GLFWwindow *window)
 	//	GL_ALPHA_INTEGER_EXT, GL_INT, &mc.edgeTable);
 	// USE THE "RED" CHANNEL INSTEAD
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16I, 256, 1, 0,
-		GL_RED_INTEGER, GL_INT, &mc.edgeTable);
+		GL_RED_INTEGER, GL_INT, &(mc.edgeTable[0]));
 	glGenerateMipmap(GL_TEXTURE_2D);
 	//Triangle Table texture//
 	//This texture store the vertex index list for
@@ -98,7 +98,7 @@ void MarchingCubesScene::initScene(GLFWwindow *window)
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16I, 16, 256, 0,
-		GL_RED_INTEGER, GL_INT, &mc.triTable);
+		GL_RED_INTEGER, GL_INT, &(mc.triTable[0]));
 	glGenerateMipmap(GL_TEXTURE_2D);
 	//Datafield//
 	//Store the volume data to polygonise
@@ -244,18 +244,17 @@ void MarchingCubesScene::initScene(GLFWwindow *window)
 	}
 
 	// add geometry and vertex attrib pointers
-	vboSceneObjects.createVBO();
 	glGenVertexArrays(1, &uiVAO); // create a VAO
 	glBindVertexArray(uiVAO);
-
+	vboSceneObjects.createVBO();
 	vboSceneObjects.bindVBO();
 
-	vboSceneObjects.addData(gridData, sizeof(glm::vec3)*cubeSize.x*cubeSize.y*cubeSize.z);
+	vboSceneObjects.addData(&(gridData[0]), sizeof(glm::vec3)*cubeSize.x*cubeSize.y*cubeSize.z);
 	vboSceneObjects.uploadDataToGPU(GL_STATIC_DRAW);
 
 	// Vertex positions
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 
 	// pipeline
 	pipeline = new Pipeline();
@@ -323,10 +322,11 @@ void MarchingCubesScene::renderScene(GLFWwindow *window)
 
 	glUniformMatrix4fv(iModelLoc, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_POINTS, 0, cubeSize.x*cubeSize.y*cubeSize.z);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glVertexPointer(3, GL_FLOAT, 0, NULL);
+	//glDrawArrays(GL_POINTS, 0, cubeSize.x*cubeSize.y*cubeSize.z);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, cubeSize.x*cubeSize.y*cubeSize.z);
+	//glDisableClientState(GL_VERTEX_ARRAY);
 	//glDrawArrays(GL_POINTS, 0, (int)(cubeSize.x*cubeSize.y*cubeSize.z));
 
 	// Swap front and back buffers

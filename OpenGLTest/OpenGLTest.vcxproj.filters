@@ -93,6 +93,45 @@
     <ClCompile Include="PCLReconstructionScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PCLGreedyReconstruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\buildpass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\hpiface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\shaderbuild.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\shadergen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\texfbosetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\triface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hpmc\src\util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HPMCScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudPCLScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simpleScene.h">
@@ -170,6 +209,21 @@
     <ClInclude Include="PCLReconstructionScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PCLGreedyReconstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hpmc\include\hpmc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hpmc\include\hpmc_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HPMCScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudPCLScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\shader.vert" />
@@ -206,5 +260,14 @@
     <None Include="assets\shaders\marchingCubes.vert" />
     <None Include="assets\shaders\dirLight_simple.frag" />
     <None Include="assets\shaders\dirLight_simple.vert" />
+    <None Include="assets\pcl\bun0.pcd">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\shaders\hpmc_th_flat.vert" />
+    <None Include="assets\shaders\hpmc_th_shaded.frag" />
+    <None Include="assets\shaders\hpmc_th_shaded.vert" />
+    <None Include="assets\volume\bonsai.raw">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
