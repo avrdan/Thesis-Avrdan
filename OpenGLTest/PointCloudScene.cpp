@@ -19,6 +19,9 @@ PointCloudScene::PointCloudScene()
 	timer = 0;
 	zoomFactor = 1;
 	fRotationAngle = 0.0f;
+	bWireFrame = false;
+	bUseMainCam = true;
+	swap = false;
 }
 
 
@@ -63,43 +66,27 @@ void PointCloudScene::initScene(GLFWwindow *window)
 	vboSceneObjects.createVBO();
 	vboSceneObjects.bindVBO();
 
-/*	// add cube to vbo
-	for (int i = 0; i < 36; i++)
-	{
-		// vertices for one face
-		vboSceneObjects.addData(&vCubeVertices[i], sizeof(glm::vec3));
-		// texture coords for one face
-		//vboSceneObjects.addData(&vCubeTexCoords[i % 6], sizeof(glm::vec2));
-	}
-
-	// add ground to VBO
-	for (int i = 0; i < 6; i++)
-	{
-		vboSceneObjects.addData(&vGround[i], sizeof(glm::vec3));
-		// scale cube coords
-		// or provide different ground tex coords
-		vCubeTexCoords[i] *= 5.0f;
-		//vboSceneObjects.addData(&vCubeTexCoords[i % 6], sizeof(glm::vec2));
-	}*/
-
 	/*for (int i = 0; i < 320 * 240; i++)
 	{
 		glm::vec3 zero    = glm::vec3(0, 0, 0);
-		//glm::vec2 zero_uv = glm::vec2(0, 0);
-
 		vboSceneObjects.addData(&zero, sizeof(glm::vec3));
-		//vboSceneObjects.addData(&zero_uv, sizeof(glm::vec2));
-	}*/
+	}
 
-	//vboSceneObjects.uploadDataToGPU(GL_STREAM_DRAW);
-
+	vboSceneObjects.uploadDataToGPU(GL_STREAM_DRAW);*/
+	glBufferData(GL_ARRAY_BUFFER, rdp->nPoints * sizeof(PXCPoint3DF32), NULL, GL_STREAM_DRAW);
 	// vertex positions start at index 0
 	// the distance between two consecutive vertices is
 	// sizeof whole vertex data
 	glEnableVertexAttribArray(0);
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(PXCPoint3DF32), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PXCPoint3DF32), 0);
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) + sizeof(glm::vec2), 0);
+
+	/*vboSceneObjects2.createVBO();
+	vboSceneObjects2.bindVBO();
+	glBufferData(GL_ARRAY_BUFFER, rdp->nPoints * sizeof(PXCPoint3DF32), NULL, GL_STREAM_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PXCPoint3DF32), 0);*/
 
 	// texture coordinates start right after the position (stride = size glm3)
 	// distance is again whole vertex data
@@ -134,7 +121,7 @@ void PointCloudScene::initScene(GLFWwindow *window)
 
 void PointCloudScene::renderScene(GLFWwindow *window)
 {
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	rdp->renderFrame();
 	// convert pvertexmem to glm
 	// update vertex data	
@@ -144,7 +131,8 @@ void PointCloudScene::renderScene(GLFWwindow *window)
 	//
 
 	//glBindVertexArray(uiVAOSceneObjects);
-	vboSceneObjects.bindVBO();
+	//glBindVertexArray(uiVAOSceneObjects);
+	//vboSceneObjects.bindVBO();
 
 	// map the buffer
 /*	glm::vec3 *mapped =
@@ -157,19 +145,23 @@ void PointCloudScene::renderScene(GLFWwindow *window)
 		*/
 	// explicitly invalidate the buffer
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*rdp->pVertexMem->positions.size(), 0, GL_DYNAMIC_DRAW);
-
-	/*glm::vec3 *mapped = reinterpret_cast<glm::vec3*>(vboSceneObjects.mapSubBufferToMemory(GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT, 
-		sizeof(glm::vec3) * 42, sizeof(glm::vec3)*rdp->pVertexMem->positions.size()));
+	/*
+	PXCPoint3DF32 *mapped = reinterpret_cast<PXCPoint3DF32*>(vboSceneObjects.mapSubBufferToMemory(GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT, 
+		0, sizeof(PXCPoint3DF32)*rdp->nPoints));
 
 	// copy data into the mapped memory
-	std::vector<glm::vec3> data = rdp->pVertexMem->positions;
+	//std::vector<PXCPoint3DF32> data = &rdp->pos3d[0];
 
-	std::copy(data.begin(), data.end(), mapped);
+	//std::copy(&rdp->pos3d[0], &rdp->pos3d[rdp->nPoints], &mapped[0]);
+	//std::copy(data.begin(), data.end(), mapped);
+	
+	//std::copy(std::begin(rdp->pos3d), std::end(rdp->pos3d), mapped);
+	std::copy(&rdp->pos3d[0], &rdp->pos3d[0] + (rdp->nPoints-1) / sizeof(PXCPoint3DF32), &mapped[0]);
 	//memcpy(mapped, data.data(), data.size());
-
+//	mapped = rdp->pos3d;
 	// unmap the buffer
 	//glUnmapBuffer(GL_ARRAY_BUFFER);
-	glFlushMappedBufferRange(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 42, sizeof(glm::vec3)*rdp->pVertexMem->positions.size());
+	glFlushMappedBufferRange(GL_ARRAY_BUFFER, 0, sizeof(PXCPoint3DF32)*rdp->nPoints);
 	vboSceneObjects.unmapBuffer();
 	*/
 	// clear first
@@ -185,12 +177,59 @@ void PointCloudScene::renderScene(GLFWwindow *window)
 	ibo.addData(&(rdp->pVertexMem->indices[0]), rdp->depthCamHeight * rdp->depthCamWidth * sizeof(unsigned int));
 	ibo.updateGPUData(0);
 	*/
-	vboSceneObjects.addData(&(rdp->pos3d[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
-	//vboSceneObjects.updateGPUData(0);
+	//vboSceneObjects.uploadDataToGPU(GL_STREAM_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, rdp->nPoints * sizeof(PXCPoint3DF32), NULL, GL_STREAM_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, rdp->nPoints * sizeof(PXCPoint3DF32), NULL, GL_STREAM_DRAW);
+	/*if (swap)
+	{
+		swap = !swap;
+		vboSceneObjects.bindVBO();
+		glBufferData(GL_ARRAY_BUFFER, rdp->nPoints * sizeof(PXCPoint3DF32), NULL, GL_STREAM_DRAW);
+		vboSceneObjects2.bindVBO();
+		//vboSceneObjects.addData(&(rdp->pos3d[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
+		vboSceneObjects2.addData(rdp->worldPos.data(), rdp->nPoints * sizeof(PXCPoint3DF32));
+		//vboSceneObjects.addData(&(rdp->worldPos[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
+		vboSceneObjects2.uploadDataToGPU(GL_STREAM_DRAW);
+	}
+	else
+	{
+		swap = !swap;
+		vboSceneObjects2.bindVBO();
+		glBufferData(GL_ARRAY_BUFFER, rdp->nPoints * sizeof(PXCPoint3DF32), NULL, GL_STREAM_DRAW);
+		vboSceneObjects.bindVBO();
+		//vboSceneObjects.addData(&(rdp->pos3d[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
+		vboSceneObjects.addData(rdp->worldPos.data(), rdp->nPoints * sizeof(PXCPoint3DF32));
+		//vboSceneObjects.addData(&(rdp->worldPos[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
+		vboSceneObjects.uploadDataToGPU(GL_STREAM_DRAW);
+	}*/
+	//glBindVertexArray(uiVAOSceneObjects);
+	//glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STREAM_DRAW);
+	//glInvalidateBufferData(vboSceneObjects.getBufferID());
+	
+	//vboSceneObjects.addData(&(rdp->pos3d[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
+	vboSceneObjects.addData(rdp->worldPos.data(), rdp->nPoints * sizeof(PXCPoint3DF32));
+	//vboSceneObjects.addData(&(rdp->worldPos[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
 	vboSceneObjects.uploadDataToGPU(GL_STREAM_DRAW);
-	glBindVertexArray(uiVAOSceneObjects);
+
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, NULL, GL_STREAM_DRAW);
+	//ibo.addData(&(rdp->indices[0]), rdp->indices.size() * sizeof(unsigned int));
+	//ibo.uploadDataToGPU(GL_STATIC_DRAW);
+	//ibo.uploadDataToGPU(GL_STREAM_DRAW);
+	
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdp->indices.size() * sizeof(unsigned int), NULL, GL_STREAM_DRAW);
+	//ibo.addData(&(rdp->indices[0]), rdp->indices.size() * sizeof(unsigned int));
+	//vboSceneObjects.addData(&(rdp->worldPos[0]), rdp->nPoints * sizeof(PXCPoint3DF32));
+	//ibo.uploadDataToGPU(GL_STREAM_DRAW);
+
+	//glBufferData(GL_ARRAY_BUFFER, rdp->nPoints * sizeof(PXCPoint3DF32), NULL, GL_STREAM_DRAW);
+	
+	//vboSceneObjects.addData(&(rdp->pVertexMem->positions[0]), rdp->nPoints * sizeof(glm::vec3));
+	//vboSceneObjects.updateGPUData(0);
+
+	
 
 	computeMatricesFromInputs(window);
+	timer += getDeltaTime();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -199,36 +238,17 @@ void PointCloudScene::renderScene(GLFWwindow *window)
 	int iColorLocX = glGetUniformLocation(programID, "inColor");
 	glUniformMatrix4fv(iProjectionLoc, 1, GL_FALSE, glm::value_ptr(*pipeline->getProjectionMatrix()));
 
-	//glm::mat4 mModelView = glm::lookAt(glm::vec3(0, 12, 27), glm::vec3(0, 0, 0), glm::vec3(0.0f, 1.0f, 0.0f));
-	//glm::mat4 mModelView = getViewMatrix();
-	glm::mat4 mModelView = projectorV;
-	glm::mat4 mCurrent;
-
-
-
-	// texture binding
-	// set GL_ACTIVE_TEXTURE0
-	// pass sampler to fragment shader
-	int iSamplerLoc = glGetUniformLocation(programID, "gSampler");
-	glUniform1i(iSamplerLoc, 0);
-
-	// ground
-	tTextures[1].bindTexture();
-	glUniformMatrix4fv(iModelViewLoc, 1, GL_FALSE, glm::value_ptr(mModelView));
-	glUniform4fv(iColorLocX, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)));
-	//glDrawArrays(GL_TRIANGLES, 36, 6);
-
-	tTextures[0].bindTexture(0);
-
-	// rendering
-	// cube
-	mCurrent = glm::translate(mModelView, glm::vec3(-8.0f, 0.0f, 0.0f));
-	//mCurrent = glm::rotate(mCurrent, fRotationAngle, glm::vec3(1.0f, 0.0f, 0.0f));
-	mCurrent = glm::scale(mCurrent, glm::vec3(10.0f, 10.0f, 10.0f));
+	glm::mat4 mModelView;	
+	if (bUseMainCam)
+	{
+		mModelView = getViewMatrix();
+	}
+	else
+	{
+		mModelView = projectorV;
+	}
 	
-	glUniformMatrix4fv(iModelViewLoc, 1, GL_FALSE, glm::value_ptr(mCurrent));
-	glUniform4fv(iColorLocX, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
+	glm::mat4 mCurrent;
 
 	glUseProgram(programColorID);
 
@@ -240,14 +260,21 @@ void PointCloudScene::renderScene(GLFWwindow *window)
 
 	// render point cloud
 	// how many points?
+	if (bWireFrame)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else
+	{
+	
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 	mCurrent = glm::translate(mModelView, glm::vec3(0.0f, 0.0f, 0.0f));
 	mCurrent = glm::rotate(mCurrent, 180.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	//mCurrent = glm::scale(mCurrent, glm::vec3(10.0f, 10.0f, 10.0f));
 
 	glUniformMatrix4fv(iModelViewColorLoc, 1, GL_FALSE, glm::value_ptr(mCurrent));
-	//glDrawArrays(GL_POINTS, 42, 42 + rdp->depthCamWidth * rdp->depthCamHeight);
-	//glDrawArrays(GL_POINTS, 0, rdp->depthCamWidth * rdp->depthCamHeight);
-	//glDrawArrays(GL_TRIANGLES, 0, rdp->nPoints);
+	//glDrawArrays(GL_POINTS, 0, rdp->nPoints);
 
 	glDrawElements(
 		GL_TRIANGLE_STRIP,      // mode
@@ -262,16 +289,34 @@ void PointCloudScene::renderScene(GLFWwindow *window)
 	//std::cout << "Looping.. " << gluErrorString(glGetError()) << "\n";
 	// render skybox
 	//skybox.renderSkybox();
-
-	// user interaction
-	// end user interaction
-
 	fRotationAngle += pipeline->sof(30.0f);
 
 	// make sure the float does not increase
 	// drastically with time
 	if (fRotationAngle >= 360)
 		fRotationAngle -= 360;
+
+	// user interaction
+	if (timer >= 0.25f)
+	{
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_M) != GLFW_RELEASE)
+		{
+			bWireFrame = !bWireFrame;
+			timer = 0;
+		}
+	}
+
+	if (timer >= 0.25f)
+	{
+		if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_V) != GLFW_RELEASE)
+		{
+			bUseMainCam = !bUseMainCam;
+			timer = 0;
+		}
+	}
+	// end user interaction
+
+
 
 	// Swap front and back buffers
 	glfwSwapBuffers(window);

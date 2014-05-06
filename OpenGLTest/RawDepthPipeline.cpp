@@ -11,17 +11,23 @@ RawDepthPipeline::RawDepthPipeline()
 	//UtilRender depth_render(L"Depth Stream");
 	//depth_render = UtilRender(L"Depth Stream");
 	depth_render = new UtilRender(L"Depth Stream");
-
+	
+	pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_SMOOTHING, true);
+	//pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_SENSOR_RANGE, new float[]{200, 1000});
+	//pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_LOW_CONFIDENCE_VALUE, 500);
+	//pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_LOW_CONFIDENCE_VALUE, 100);
 	// set framerate to 60 fps
 	pp.QueryCapture()->QueryVideoStream(0)->QueryProfile(&pinfo);
 	pinfo.frameRateMin.numerator = 60;
 	pinfo.frameRateMin.denominator = 1;
 	pinfo.frameRateMax = pinfo.frameRateMin;
+	
 
 	pp.QueryCapture()->QueryVideoStream(0)->SetProfile(&pinfo);
 	
 	pp.QueryCapture()->QueryDevice()->SetProperty(PXCCapture::Device::PROPERTY_DEPTH_SMOOTHING, 1);
-	
+	//pp.QueryCapture()->QueryDevice()->SetProperty(PXCCapture::Device::PROPERTY_DEPTH_, 1);
+	//pp.QueryCapture()->QueryDevice()->SetProperty(PXCCapture::Device::PROPERTY_DEPTH_CONFIDENCE_THRESHOLD, 300);
 	//pp.QueryCapture()->QueryDevice()->QueryPropertyAsUID(PXCSegmentation::, &pid);
 	/*
 	g_max_distance = 850;
@@ -53,17 +59,22 @@ RawDepthPipeline::RawDepthPipeline()
 	nPoints = depthCamWidth*depthCamHeight;
 	pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
 	pos3d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	worldPos.reserve(nPoints);
+	screenPos.reserve(nPoints);
+	//screenPos.resize(nPoints);
 	// start depth rendering loop
 	// and frame acquisition
 	//renderLoop();
-	numStripsRequired = depthCamHeight - 0;
+	numStripsRequired = depthCamHeight - 1;
 	numDegensRequired = 2 * (numStripsRequired - 1);
 	verticesPerStrip = 2 * depthCamWidth;
 	indices.reserve((verticesPerStrip * numStripsRequired) + numDegensRequired);
+	//indices.reserve((verticesPerStrip * numStripsRequired) + numDegensRequired);
 	//indices.reserve((depthCamHeight - 1) * (depthCamWidth - 1) * 6); // 2 triangles per grid square x 3 vertices per triangle
 
 	addIndexData();
 	//addIndexDataTriangles();
+	//addIndexDataTriangleStrip();
 }
 
 
@@ -84,7 +95,7 @@ void RawDepthPipeline::renderLoop()
 
 		// get depth data
 		PXCImage::ImageData ddepth;
-
+		
 		depth_image->AcquireAccess(PXCImage::ACCESS_READ, &ddepth);
 
 		createPointCloud(ddepth);
@@ -96,7 +107,7 @@ void RawDepthPipeline::renderLoop()
 		//printSelectivePointCloudData(100);
 
 		depth_image->ReleaseAccess(&ddepth);
-		pp.ReleaseFrame();
+		//pp.ReleaseFrame();
 	}
 }
 
@@ -191,39 +202,70 @@ void RawDepthPipeline::printPointCloudData()
 
 void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 {
-	int n = 0;
+	worldPos.clear();
+	//screenPos.clear();
+	pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	//screenPos = std::vector<PXCPoint3DF32>(nPoints);
+	
+	//screenPos.erase(screenPos.begin(), screenPos.end());
+	//screenPos.resize(nPoints);
+	//screenPos.reserve(nPoints);
+	//worldPos = new std::vector<PXCPoint3DF32>(nPoints);
+	//delete[] pos3d;
+	//pos3d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
 
+	int n = 0;
+	//pos3d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
 	// find depth image stride
 	int depthStride = ddepth.pitches[0] / sizeof(pxcU16);
-
+	pxcU16 lastDepthValue = 0;
+	int undefined;
 	for (int y = 0; y < depthCamHeight; y++)
 	{
 		for (int x = 0; x < depthCamWidth; x++)
 		{
-			pos2d[n].x = (pxcF32)x;
-			pos2d[n].y = (pxcF32)y;
-			pos2d[n].z = (pxcF32)0;
+			pxcU16 depthValue = ((pxcU16*)ddepth.planes[0])[y * depthStride + x];
+			
+			//screenPos[n].x = (pxcF32)x;
+			//screenPos[n].y = (pxcF32)y;
+			//screenPos[n].z = (pxcF32)1000;
+			//pos2d[n].z = (pxcF32)1000;
+			//pos2d[n].x = undefined;
+			//pos2d[n].y = undefined;
+			//pos2d[n].z = undefined;
 			// raw depth data
-			pxcU16 depthValue  = ((pxcU16*)ddepth.planes[0])[y * depthStride + x];
-
+			
+			lastDepthValue = depthValue;
 			if (depthValue > 10 && depthValue < 1500)
 			{
-				pos2d[n].z = depthValue;
-			}
+				//screenPos[n].x = (pxcF32)x;
+				//screenPos[n].y = (pxcF32)y;
+				//screenPos[n].z = (pxcF32)depthValue;
 
+				pos2d[n].x = (pxcF32)x;
+				pos2d[n].y = (pxcF32)y;
+				pos2d[n].z = (pxcF32)depthValue;
+				
+				
+			}
 			n++;
 		}
 	}
 
-	projection->ProjectImageToRealWorld(nPoints, pos2d, pos3d);
+	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
+	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());	
+	delete[] pos2d;
 	
+	//indices.clear();
+	//addIndexData();
+	//std::copy(&pos3d[0], &pos3d[nPoints], std::back_inserter(worldPos));
 }
 
 void RawDepthPipeline::createPointCloud(PXCImage::ImageData ddepth)
 {
 	int n = 0;
 	pVertexMem->positions.clear();
-	pVertexMem->indices.clear();
+	//pVertexMem->indices.clear();
 	//pVertexMem->uvs.clear();
 
 	// find depth image stride
@@ -260,18 +302,11 @@ void RawDepthPipeline::createPointCloud(PXCImage::ImageData ddepth)
 	}
 
 	//addIndexData();
-	for (int y = 0; y < depthCamHeight-1; ++y)
+	/*for (int y = 0; y < depthCamHeight-1; ++y)
 	{
 		for (int x = 0; x < depthCamWidth-1; ++x)
 		{
 			int start = y * depthCamWidth + x;
-			/*indices[indicesIndex++] = (short)start;
-			indices[indicesIndex++] = (short)(start + 1);
-			indices[indicesIndex++] = (short)(start + depthCamWidth);
-			indices[indicesIndex++] = (short)(start + 1);
-			indices[indicesIndex++] = (short)(start + 1 + depthCamWidth);
-			indices[indicesIndex++] = (short)(start + depthCamWidth);*/
-
 			pVertexMem->indices.push_back((unsigned int)start);
 			pVertexMem->indices.push_back((unsigned int)(start + 1));
 			pVertexMem->indices.push_back((unsigned int)(start + depthCamWidth));
@@ -279,7 +314,7 @@ void RawDepthPipeline::createPointCloud(PXCImage::ImageData ddepth)
 			pVertexMem->indices.push_back((unsigned int)(start + 1 + depthCamWidth));
 			pVertexMem->indices.push_back((unsigned int)(start + depthCamWidth));
 		}
-	}
+	}*/
 
 }
 
@@ -345,6 +380,50 @@ void RawDepthPipeline::addIndexData()
 			indices.push_back((unsigned int)(((y + 1) * depthCamHeight) + (depthCamWidth - 1)));
 		}
 	}*/
+}
+
+void RawDepthPipeline::addIndexDataTriangleStrip()
+{
+	int lastIndex = 0;
+	int direction = -1;
+	int width = depthCamWidth * 2;
+	int height = depthCamHeight - 1;
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			if (x == 0)
+			{
+				// always place the first element of the row at the 
+				// current index value
+				indices.push_back((unsigned int)lastIndex);
+			}
+			else if (x % 2 == 0)
+			{
+				// subtract the number of indices
+				// and the direction (+1 or -1)
+				lastIndex -= width + direction;
+				indices.push_back((unsigned int)lastIndex);
+			}
+			else if (x % 2 != 0)
+			{
+				// add the number of vertices in the row
+				// to the index
+				lastIndex += width;
+				indices.push_back((unsigned int)lastIndex);
+			}
+
+			if (x == (width - 1) * y)
+			{
+				// add degenerate triangle (to help switch direction)
+				indices.push_back((unsigned int)lastIndex);
+				// we are changing the row and direction
+				direction *= -1;
+			}
+		}
+	}
+		
+
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr RawDepthPipeline::createPointCloudPCL(PXCImage::ImageData ddepth)

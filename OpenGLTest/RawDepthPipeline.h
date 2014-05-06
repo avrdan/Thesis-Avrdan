@@ -52,6 +52,8 @@ public:
 		std::vector<glm::vec2> uvs;
 		std::vector<glm::vec3> normals;
 		std::vector<unsigned int> indices;
+
+		
 		//glm::vec3 positions[];
 		//glm::vec2 uvs[];
 	};
@@ -66,6 +68,8 @@ public:
 
 	void renderFrame();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr renderFramePCL();
+	std::vector<PXCPoint3DF32> worldPos;
+	std::vector<PXCPoint3DF32> screenPos;
 private:
 
 	PXCCapture::VideoStream::ProfileInfo pinfo;
@@ -93,6 +97,7 @@ private:
 	void createPointCloudMappedToWorld(PXCImage::ImageData ddepth);
 	void addIndexData();
 	void addIndexDataTriangles();
+	void addIndexDataTriangleStrip();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr createPointCloudPCL(PXCImage::ImageData ddepth);
 	void renderLoop();
 };

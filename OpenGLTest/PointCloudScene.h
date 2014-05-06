@@ -13,6 +13,7 @@ public:
 	void releaseScene();
 private:
 	VertexBufferObject vboSceneObjects;
+	VertexBufferObject vboSceneObjects2;
 	VertexBufferObject ibo;
 	GLuint uiVAOSceneObjects;
 	Skybox skybox;
@@ -48,7 +49,10 @@ private:
 	float  timer;
 	float zoomFactor;
 	float fRotationAngle;
+	bool bWireFrame;
+	bool bUseMainCam;
 
 	glm::mat4 projectorV;
+	bool swap;
 };
 
