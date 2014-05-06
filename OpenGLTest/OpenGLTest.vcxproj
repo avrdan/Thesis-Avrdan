@@ -122,6 +122,7 @@
     <ClCompile Include="PCLGreedyReconstruction.cpp" />
     <ClCompile Include="PCLReconstructionScene.cpp" />
     <ClCompile Include="PointCloudPCLScene.cpp" />
+    <ClCompile Include="PointCloudPTMScene.cpp" />
     <ClCompile Include="PointCloudScene.cpp" />
     <ClCompile Include="projTextureMappingScene.cpp" />
     <ClCompile Include="PTMTestScene.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="PCLGreedyReconstruction.h" />
     <ClInclude Include="PCLReconstructionScene.h" />
     <ClInclude Include="PointCloudPCLScene.h" />
+    <ClInclude Include="PointCloudPTMScene.h" />
     <ClInclude Include="PointCloudScene.h" />
     <ClInclude Include="projTextureMappingScene.h" />
     <ClInclude Include="PTMTestScene.h" />
@@ -188,6 +190,8 @@
     <None Include="assets\shaders\pre_process.vert" />
     <None Include="assets\shaders\ptm.frag" />
     <None Include="assets\shaders\ptm.vert" />
+    <None Include="assets\shaders\ptm_color.frag" />
+    <None Include="assets\shaders\ptm_color.vert" />
     <None Include="assets\shaders\shader.frag" />
     <None Include="assets\shaders\shader.vert" />
     <None Include="assets\shaders\shader_hm.frag" />

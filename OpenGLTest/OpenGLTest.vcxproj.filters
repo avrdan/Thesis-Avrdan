@@ -132,6 +132,9 @@
     <ClCompile Include="PointCloudPCLScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PointCloudPTMScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simpleScene.h">
@@ -224,6 +227,9 @@
     <ClInclude Include="PointCloudPCLScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PointCloudPTMScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\shader.vert" />
@@ -269,5 +275,7 @@
     <None Include="assets\volume\bonsai.raw">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="assets\shaders\ptm_color.frag" />
+    <None Include="assets\shaders\ptm_color.vert" />
   </ItemGroup>
 </Project>
