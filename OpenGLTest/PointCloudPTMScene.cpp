@@ -205,7 +205,8 @@ PointCloudPTMScene::PointCloudPTMScene()
 		projectorRotation[2][0], projectorRotation[2][1], projectorRotation[2][2], projectorTranslation.z,
 		0, 0, 0, 1);
 	//mExtrinsicMatrix = glm::transpose(mExtrinsicMatrix);
-	mExtrinsicMatrix = glm::inverse(mExtrinsicMatrix);
+	//mExtrinsicMatrix = glm::inverse(mExtrinsicMatrix);
+	
 	cout << "EXTRINSIC MATRIX" << endl;
 	for (int i = 0; i < 4; i++)
 	{
@@ -251,12 +252,12 @@ PointCloudPTMScene::PointCloudPTMScene()
 	bottom = -1 * ((1080 - v0) / fv) * nearP;
 
 
-	frustum = glm::mat4(0);
+	/*frustum = glm::mat4(0);
 	frustum[0][0] = fu / u0;
 	frustum[1][1] = fv / v0;
 	frustum[2][2] = -(farP + nearP) / (farP - nearP);
 	frustum[2][3] = (-2) * farP * nearP / (farP - nearP);
-	frustum[3][2] = -1;
+	frustum[3][2] = -1;*/
 
 	cout << "FRUSTUM MATRIX" << endl;
 	for (int i = 0; i < 4; i++)
@@ -461,7 +462,8 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			if (bUseCalibParams)
 			{
 				//pipeline->setProjection3D(fovy, 16.0f / 9.0f, 0.1f, 1000.0f);
-				pipeline->setProjectionMatrix(glm::inverse(frustum));
+				//pipeline->setProjectionMatrix(glm::inverse(frustum));
+				pipeline->setProjectionMatrix(frustum);
 				mModelView = mExtrinsicMatrix;
 			}
 			else
@@ -525,9 +527,12 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			int iFrustumInvMVLoc = glGetUniformLocation(programFrustumID, "invMV");
 
 			// calibrated camera
-			glUniformMatrix4fv(iFrustumInvProjectionLoc, 1, GL_FALSE, glm::value_ptr(frustum));
-			glUniformMatrix4fv(iFrustumInvMVLoc, 1, GL_FALSE, glm::value_ptr(mExtrinsicMatrix));
-
+			//glUniformMatrix4fv(iFrustumInvProjectionLoc, 1, GL_FALSE, glm::value_ptr(frustum));
+			//glUniformMatrix4fv(iFrustumInvMVLoc, 1, GL_FALSE, glm::value_ptr(mExtrinsicMatrix));
+			//glUniformMatrix4fv(iFrustumInvProjectionLoc, 1, GL_FALSE, glm::value_ptr(glm::inverse(frustum)));
+			//glUniformMatrix4fv(iFrustumInvMVLoc, 1, GL_FALSE, glm::value_ptr(glm::inverse(mExtrinsicMatrix)));
+			glUniformMatrix4fv(iFrustumInvProjectionLoc, 1, GL_FALSE, glm::value_ptr(glm::inverse(projectorP)));
+			glUniformMatrix4fv(iFrustumInvMVLoc, 1, GL_FALSE, glm::value_ptr(glm::inverse(projectorV)));
 			// world view
 			glUniformMatrix4fv(iFrustumProjectionLoc, 1, GL_FALSE, glm::value_ptr(*pipeline->getProjectionMatrix()));
 			//glUniformMatrix4fv(iFrustumProjectionLoc, 1, GL_FALSE, glm::value_ptr(glm::inverse(projectorP)));
@@ -834,8 +839,8 @@ void PointCloudPTMScene::computeFrustumCoords(glm::mat4 mProjection)
 	};
 
 
-	cout << "frustum coord 0: " << frustum_coords[0].x << ", " << frustum_coords[0].y << ", " << frustum_coords[0].z << endl;
-	CreateFrustumSimple(&uiVAOSceneObjects, vboDebug, frustum_coords, 6);
+	//cout << "frustum coord 0: " << frustum_coords[0].x << ", " << frustum_coords[0].y << ", " << frustum_coords[0].z << endl;
+	CreateFrustumSimple(&uiVAOSceneObjects, vboDebug, frustum_coords);
 
 	// Get near and far from the Projection matrix.
 	//float near = mProjection[1][1] / (mProjection[1][0] – 1.0f);

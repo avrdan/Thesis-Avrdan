@@ -11,7 +11,7 @@ void CreateStaticSceneObjects(GLuint* uiVAO, VertexBufferObject& vboDest);
 void CreateStaticSceneObjects2(GLuint* uiVAO, VertexBufferObject& vboDest, glm::vec3 frustum_coords[]);
 void CreateStaticSceneObjects3(GLuint* uiVAO, VertexBufferObject& vboDest);
 void CreateFrustumOutlines(GLuint* uiVAO, VertexBufferObject& vboDest, glm::vec3 frustum_coords[]);
-void CreateFrustumSimple(GLuint* uiVAO, VertexBufferObject& vboDest, glm::vec3 frustum_coords[], int index);
+void CreateFrustumSimple(GLuint* uiVAO, VertexBufferObject& vboDest, glm::vec3 frustum_coords[]);
 
 extern int iSphereFaces;
 

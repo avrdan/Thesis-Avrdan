@@ -379,7 +379,7 @@ void CreateStaticSceneObjects(GLuint* uiVAO, VertexBufferObject& vboDest)
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3) + sizeof(glm::vec2), (void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
 }
 
-void CreateFrustumSimple(GLuint* uiVAO, VertexBufferObject& vboDest, glm::vec3 frustum_coords[], int index)
+void CreateFrustumSimple(GLuint* uiVAO, VertexBufferObject& vboDest, glm::vec3 frustum_coords[])
 {
 	vboDest.createVBO();
 	//glGenVertexArrays(1, uiVAO); // Create one VAO
@@ -388,7 +388,7 @@ void CreateFrustumSimple(GLuint* uiVAO, VertexBufferObject& vboDest, glm::vec3 f
 	vboDest.bindVBO();
 
 	// add frustum to VBO
-	for (int i = index; i < 36 + index; i++)
+	for (int i = 0; i < 36; i++)
 	{
 		vboDest.addData(&frustum_coords[i], sizeof(glm::vec3));
 	}
