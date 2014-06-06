@@ -90,6 +90,7 @@ void PTMTestScene::initScene(GLFWwindow *window)
 	programPTM_ID = LoadShaders(vertexShaderPTMSource, fragmentShaderPTMSource);
 	programSimpleID = LoadShaders(vertexShaderSimpleSource, fragmentShaderSimpleSource);
 
+
 	glUseProgram(programID);
 }
 

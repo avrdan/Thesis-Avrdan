@@ -236,7 +236,7 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 			// raw depth data
 			
 			lastDepthValue = depthValue;
-			if (depthValue > 10 && depthValue < 1500)
+			if (depthValue > 10 && depthValue < 2000)
 			{
 				//screenPos[n].x = (pxcF32)x;
 				//screenPos[n].y = (pxcF32)y;
@@ -254,6 +254,10 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 
 	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
 	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());	
+
+	// use this to align depth with color
+	//projection->MapDepthToColorCoordinates
+
 	delete[] pos2d;
 	
 	//indices.clear();

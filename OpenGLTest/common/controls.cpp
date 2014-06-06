@@ -12,6 +12,8 @@ mat4 ProjectionMatrix;
 float deltaTime = 0;
 glm::vec3 vLook;
 glm::vec3 vEye;
+bool startMouseLook = false;
+bool resetMouseLook = false;
 
 mat4 getViewMatrix()
 {
@@ -39,11 +41,34 @@ glm::vec3 getEyeVector()
 	return vEye;
 }
 
+void setResetMouseLook(bool rml)
+{
+	resetMouseLook = rml;
+}
+void setStartMouseLook(bool sml)
+{
+	startMouseLook = sml;
+}
+
+bool isStartMouseLook()
+{
+	return startMouseLook;
+}
+
+bool isResetMouseLook()
+{
+	return resetMouseLook;
+}
+
 // position
+// HACK: INVERTED Z
 vec3 position = vec3(0, 0, 5);
+// HACK VALUES 2*PI and - 2*PI
 // horizontal angle : toward -Z 
+//float horizontalAngle = 2*3.14f; // (get a library with PI defined)
 float horizontalAngle = 3.14f; // (get a library with PI defined)
 // vertical angle : 0, look at the horizon
+//float verticalAngle = -2*3.14f;
 float verticalAngle = 0;
 // initial fov
 float initialFoV = 45.0f;
@@ -52,6 +77,16 @@ float initialFoV = 45.0f;
 
 float speed      = 3.0f; // 3 units /second
 float mouseSpeed = 0.005f;
+
+void increaseSpeedFactor()
+{
+	speed *= 2;
+}
+void decreaseSpeedFactor()
+{
+	speed /= 2;
+}
+
 
 void computeMatricesFromInputs(GLFWwindow* window)
 {
@@ -67,13 +102,56 @@ void computeMatricesFromInputs(GLFWwindow* window)
     glfwGetCursorPos(window, &xpos, &ypos);
     
     // Reset mouse position for next frame
-    glfwSetCursorPos(window, 1024/2, 768/2);
+    glfwSetCursorPos(window, 1980/2, 1080/2);
     
     //if(abs(1024/2 - xpos) > 10 || abs(768/2 - ypos) > 10)
     //{
         // compute new orientation
-        horizontalAngle += (mouseSpeed   * float(1024/2 - xpos) ) * 3.14f / 180;
-        verticalAngle   += (mouseSpeed   * float(768/2  - ypos) ) * 3.14f / 180;
+
+	if (resetMouseLook)
+	{
+		horizontalAngle = 3.14f; // (get a library with PI defined)
+		// vertical angle : 0, look at the horizon
+		verticalAngle = 0;
+
+		//horizontalAngle = 2 * 3.14f; // (get a library with PI defined)
+		// vertical angle : 0, look at the horizon
+		//verticalAngle = -2 * 3.14f;
+
+		resetMouseLook = false;
+	}
+	if (startMouseLook)
+	{
+		horizontalAngle += (mouseSpeed   * float(1920 / 2 - xpos)) * 3.14f / 180;
+		verticalAngle += (mouseSpeed   * float(1080 / 2 - ypos)) * 3.14f / 180;
+
+	}
+        
+
+	// Rotate X
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+	{
+
+		horizontalAngle -= (mouseSpeed   * float(1920 / 2 - 0)) * 3.14f / 180 * deltaTime;
+	}
+
+	
+	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+	{
+		horizontalAngle += (mouseSpeed * float(1920 / 2 - 0)) * 3.14f / 180 * deltaTime;
+	}
+
+	// Rotate Y
+	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+	{
+
+		verticalAngle -= (mouseSpeed   * float(1080 / 2 - 0)) * 3.14f / 180 * deltaTime;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+	{
+		verticalAngle += (mouseSpeed   * float(1080 / 2 - 0)) * 3.14f / 180 * deltaTime;
+	}
     //}
     
     // Direction : Spherical coordinates to Cartesian coordinates conversion

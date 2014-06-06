@@ -61,7 +61,32 @@ int wmain(int argc, WCHAR* argv[])
 		
 	
 	/* Create a windowed mode window and its OpenGL Context*/
-	window = glfwCreateWindow(1024, 768, "3D SCENE", NULL, NULL);
+	// get the current Desktop screen resolution and colour depth
+	/*GLFWvidmode desktop;
+	
+	glfwGetDesktopMode(&desktop);
+
+	// open the window at the current Desktop resolution and colour depth
+	if (!glfwOpenWindow(
+		desktop.Width,
+		desktop.Height,
+		desktop.RedBits,
+		desktop.GreenBits,
+		desktop.BlueBits,
+		8,          // alpha bits
+		32,         // depth bits
+		0,          // stencil bits
+		GLFW_FULLSCREEN
+		)) {
+		// failed to open window: handle it here
+	}*/
+	//window = glfwCreateWindow(1024, 768, "3D SCENE", NULL, NULL);
+	//window = glfwCreateWindow(320, 240, "Deformable Display", NULL, NULL);
+	//window = glfwCreateWindow(1920, 1080, "Deformable Display", NULL, NULL);
+	//window = glfwCreateWindow(1280, 720, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
+	//window = glfwCreateWindow(1920, 1080, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
+	window = glfwCreateWindow(1919, 1079, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
+	//glfwSetWindowSize(window, 1920, 1080);
 	if (!window)
 	{
 		glfwTerminate();

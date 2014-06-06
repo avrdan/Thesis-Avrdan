@@ -13,6 +13,10 @@ public:
 private:
 	const char* vertexShaderSource;
 	const char* fragmentShaderSource;
+
+	const char* hmVertexShaderSource;
+	const char* hmFragmentShaderSource;
+
 	const char* texSnowSource;
 	const char* texGoldSource;
 
@@ -25,6 +29,7 @@ private:
 	const char* skyLeft;
 
 	GLuint programID;
+	GLuint programID_HeatMap;
 	Pipeline *pipeline;
 	float fRotationAngle;
 	float PIover180;
@@ -34,5 +39,8 @@ private:
 	Texture tGold, tSnow;
 
 	Skybox skybox;
+
+	float timer;
+	bool bShowHeatMap;
 };
 

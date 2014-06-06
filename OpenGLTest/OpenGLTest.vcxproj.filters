@@ -277,5 +277,7 @@
     </None>
     <None Include="assets\shaders\ptm_color.frag" />
     <None Include="assets\shaders\ptm_color.vert" />
+    <None Include="assets\shaders\heatMap.frag" />
+    <None Include="assets\shaders\heatMap.vert" />
   </ItemGroup>
 </Project>

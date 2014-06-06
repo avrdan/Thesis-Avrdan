@@ -16,6 +16,11 @@ glm::mat4 getViewMatrix();
 float getDeltaTime();
 glm::vec3 getLookVector();
 glm::vec3 getEyeVector();
-
+bool isResetMouseLook();
+bool isStartMouseLook();
+void setResetMouseLook(bool rml);
+void setStartMouseLook(bool sml);
+void increaseSpeedFactor();
+void decreaseSpeedFactor();
 
 #endif // CONTROLS_H

@@ -177,6 +177,8 @@
     <None Include="assets\shaders\geometry.frag" />
     <None Include="assets\shaders\geometry.geom" />
     <None Include="assets\shaders\geometry.vert" />
+    <None Include="assets\shaders\heatMap.frag" />
+    <None Include="assets\shaders\heatMap.vert" />
     <None Include="assets\shaders\hpmc_th_flat.vert" />
     <None Include="assets\shaders\hpmc_th_shaded.frag" />
     <None Include="assets\shaders\hpmc_th_shaded.vert" />

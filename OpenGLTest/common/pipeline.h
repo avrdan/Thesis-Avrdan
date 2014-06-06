@@ -15,6 +15,8 @@ class Pipeline
 {
 public:
 	void setProjection3D(float fFOV, float fAspectRatio, float fNear, float fFar);
+	void Pipeline::setFrustum(float left, float right, float bottom, float top, float near, float far);
+	void Pipeline::setProjectionMatrix(glm::mat4 mProjection);
 	glm::mat4* getProjectionMatrix();
 
 	void resetTimer();

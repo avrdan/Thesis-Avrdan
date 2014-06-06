@@ -410,7 +410,7 @@ void ShadowMappingScene::renderScene(GLFWwindow *window)
 
 	// PART III: Optionally render the shadowmap (for debug only)
 	// ----------------------------------------------------------
-	/*
+	
 	// Render only on a corner of the window (or we we won't see the real rendering...)
 	glViewport(0, 0, 512, 512);
 	GLuint texID = glGetUniformLocation(quadprogramID, "tex");
@@ -425,7 +425,7 @@ void ShadowMappingScene::renderScene(GLFWwindow *window)
 
 	glBindVertexArray(uiVAO);
 	glDrawArrays(GL_TRIANGLES, 42 + iTorusFaces1 * 3 + iTorusFaces2 * 3, 42 + iTorusFaces1 * 3 + iTorusFaces2 * 3 + 6);
-	*/
+	
 
 	// update stuff
 	fGlobalAngle += pipeline->sof(100.0f);

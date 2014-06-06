@@ -11,6 +11,18 @@ void Pipeline::setProjection3D(float fFOV, float fAspectRatio, float fNear, floa
 	mProjection = glm::perspective(fFOV, fAspectRatio, fNear, fFar);
 }
 
+void Pipeline::setProjectionMatrix(glm::mat4 mProjection)
+{
+	this->mProjection = mProjection;
+}
+
+
+void Pipeline::setFrustum(float left, float right, float bottom, float top, float nearP, float farP)
+{
+	mProjection = glm::frustum(left, right, bottom, top, nearP, farP);
+}
+
+
 glm::mat4* Pipeline::getProjectionMatrix()
 {
 	return &mProjection;
