@@ -7,12 +7,19 @@ RawDepthPipeline::RawDepthPipeline()
 	pVertexMem = new sVertexType[depthCamWidth * depthCamHeight];
 
 	pp.EnableImage(PXCImage::COLOR_FORMAT_DEPTH);
+	
+	// also enable color image
+	//pp.EnableImage(PXCImage::COLOR_FORMAT_RGB32);
+
 	pp.Init();
 	//UtilRender depth_render(L"Depth Stream");
 	//depth_render = UtilRender(L"Depth Stream");
 	depth_render = new UtilRender(L"Depth Stream");
+	//color_render = new UtilRender(L"Color Stream");
 	
 	pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_SMOOTHING, true);
+	pp.QueryCapture()->QueryDevice()->QueryProperty(PXCCapture::Device::PROPERTY_DEPTH_LOW_CONFIDENCE_VALUE, &dvalues[0]);
+	pp.QueryCapture()->QueryDevice()->QueryProperty(PXCCapture::Device::PROPERTY_DEPTH_SATURATION_VALUE, &dvalues[1]);
 	//pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_SENSOR_RANGE, new float[]{200, 1000});
 	//pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_LOW_CONFIDENCE_VALUE, 500);
 	//pp.QueryCapture()->SetFilter(PXCCapture::Device::PROPERTY_DEPTH_LOW_CONFIDENCE_VALUE, 100);
@@ -21,9 +28,8 @@ RawDepthPipeline::RawDepthPipeline()
 	pinfo.frameRateMin.numerator = 60;
 	pinfo.frameRateMin.denominator = 1;
 	pinfo.frameRateMax = pinfo.frameRateMin;
-	
-
 	pp.QueryCapture()->QueryVideoStream(0)->SetProfile(&pinfo);
+	//pp.QueryCapture()->QueryVideoStream(1)->SetProfile(&pinfo);
 	
 	pp.QueryCapture()->QueryDevice()->SetProperty(PXCCapture::Device::PROPERTY_DEPTH_SMOOTHING, 1);
 	//pp.QueryCapture()->QueryDevice()->SetProperty(PXCCapture::Device::PROPERTY_DEPTH_, 1);
@@ -57,8 +63,13 @@ RawDepthPipeline::RawDepthPipeline()
 	//pVertexMem->indices.resize((verticesPerStrip * numStripsRequired) + numDegensRequired);
 
 	nPoints = depthCamWidth*depthCamHeight;
-	pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
-	pos3d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	nPointsRGB = rgbCamWidth*rgbCamHeight;
+	//pos3dDepth = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	pos2d	    = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	pos3d		= (PXCPoint3DF32*)new PXCPoint3DF32[nPointsRGB];
+	pos2dColor  = (PXCPointF32*)new PXCPointF32[nPoints];
+
+	depthData.resize(nPointsRGB);
 	worldPos.reserve(nPoints);
 	screenPos.reserve(nPoints);
 	//screenPos.resize(nPoints);
@@ -72,7 +83,9 @@ RawDepthPipeline::RawDepthPipeline()
 	//indices.reserve((verticesPerStrip * numStripsRequired) + numDegensRequired);
 	//indices.reserve((depthCamHeight - 1) * (depthCamWidth - 1) * 6); // 2 triangles per grid square x 3 vertices per triangle
 
-	addIndexData();
+	addIndexData(depthCamWidth, depthCamHeight);
+	//addIndexData(rgbCamWidth, rgbCamHeight);
+	//addIndexData();
 	//addIndexDataTriangles();
 	//addIndexDataTriangleStrip();
 }
@@ -129,22 +142,26 @@ void RawDepthPipeline::renderFrame()
 	//PXCImage *color_image = pp.QueryImage(PXCImage::IMAGE_TYPE_COLOR);
 	PXCImage *depth_image = pp.QueryImage(PXCImage::IMAGE_TYPE_DEPTH);
 	//PXCImage *depth_image = pp.QuerySegmentationImage();
-	//if (!color_render.RenderFrame(color_image)) break;
+	//if (!color_render->RenderFrame(color_image)) return;
 	if (!depth_render->RenderFrame(depth_image)) return;
+
 
 	// get depth data
 	PXCImage::ImageData ddepth;
+	PXCImage::ImageData dcolor;
 
 	depth_image->AcquireAccess(PXCImage::ACCESS_READ, &ddepth);
-
+	//color_image->AcquireAccess(PXCImage::ACCESS_READ, &dcolor);
 	//createPointCloud(ddepth);
 	createPointCloudMappedToWorld(ddepth);
+	//createPointCloudMappedToWorld(ddepth, dcolor);
 	// NOTE THAT NOT ALL ARRAY VALUES ARE VALID FOR
 	// JUST THE ONES WITH DEPTH > 10
 	//printPointCloudData();
 	//printSelectivePointCloudData(100);
 
 	depth_image->ReleaseAccess(&ddepth);
+	//color_image->ReleaseAccess(&dcolor);
 	pp.ReleaseFrame();
 }
 
@@ -205,6 +222,7 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 	worldPos.clear();
 	//screenPos.clear();
 	pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	//pos3dDepth = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
 	//screenPos = std::vector<PXCPoint3DF32>(nPoints);
 	
 	//screenPos.erase(screenPos.begin(), screenPos.end());
@@ -252,14 +270,116 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 		}
 	}
 
+	// convert to color first
+
 	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
-	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());	
+	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());
 
 	// use this to align depth with color
 	//projection->MapDepthToColorCoordinates
 
 	delete[] pos2d;
 	
+	//indices.clear();
+	//addIndexData();
+	//std::copy(&pos3d[0], &pos3d[nPoints], std::back_inserter(worldPos));
+}
+
+void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth, PXCImage::ImageData dcolor)
+{
+	worldPos.clear();
+	depthData.clear();
+	depthData.resize(nPointsRGB);
+	//pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	pos2d		= (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	pos2dColor  = (PXCPointF32*)new PXCPointF32[nPoints];
+	pos3d		= (PXCPoint3DF32*)new PXCPoint3DF32[nPointsRGB];
+
+	int n = 0;
+	// find depth image stride
+	int depthStride = ddepth.pitches[0] / sizeof(pxcU16);
+	pxcU16 lastDepthValue = 0;
+
+	for (int y = 0; y < depthCamHeight; y++)
+	{
+		for (int x = 0; x < depthCamWidth; x++)
+		{
+			pxcU16 depthValue = ((pxcU16*)ddepth.planes[0])[y * depthStride + x];
+			// raw depth data
+
+			lastDepthValue = depthValue;
+			if (depthValue > 10 && depthValue < 2000)
+			{
+				pos2d[n].x = (pxcF32)x;
+				pos2d[n].y = (pxcF32)y;
+				pos2d[n].z = (pxcF32)depthValue;
+			}
+			n++;
+		}
+	}
+
+	// convert to color first
+	projection->MapDepthToColorCoordinates(nPoints, &pos2d[0], &pos2dColor[0]);
+
+	// save the aligned depth map
+	n = 0;
+	for(int y = 0; y < depthCamHeight; y++)
+	{
+		for (int x = 0; x < depthCamWidth; x++)
+		{
+			int xx = (int)(pos2dColor[n].x + 0.5f);
+			int yy = (int)(pos2dColor[n].y + 0.5f);
+			int currIndex = yy * depthCamWidth + xx;
+			//depthData.at(currIndex) = 0;
+			
+			if (xx < 0 || yy < 0 || (pxcU32)xx >= rgbCamWidth || (pxcU32)yy >= rgbCamHeight)
+				continue; // no mapping based on clipping due to differences in FOV between the two cameras.
+			if (pos2d[n].z == dvalues[0] || pos2d[n].z == dvalues[1])
+				continue; // no mapping based on unreliable depth values
+
+			// save the mapped depth data
+			if (pos2d[n].z > 0)
+				depthData.at(currIndex) = pos2d[n].z;
+
+			n++;
+		}
+	}
+
+
+	//pos3d = &pos2dColor[0];
+	n = 0;
+	/*for (int y = 0; n < depthCamHeight*depthCamWidth; n++)
+	{
+		pos3d[n].x = pos2dColor[n].x;
+		pos3d[n].y = pos2dColor[n].y;
+		pos3d[n].z = pos2d[n].z;
+	}*/
+	for (int y = 0; y < rgbCamHeight; y++)
+	{
+		for (int x = 0; x < rgbCamWidth; x++)
+		{
+			if (depthData[n] > 0)
+			{
+				pos3d[n].x = x;
+				pos3d[n].y = y;
+				pos3d[n].z = depthData[n];
+			}
+			
+			n++;
+		}
+	}
+	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
+	
+	projection->ProjectImageToRealWorld(nPoints, &pos3d[0], worldPos.data());
+	//projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());
+
+	// use this to align depth with color
+	//projection->MapDepthToColorCoordinates
+
+	delete[] pos2d;
+	delete[] pos2dColor;
+	delete[] pos3d;
+
 	//indices.clear();
 	//addIndexData();
 	//std::copy(&pos3d[0], &pos3d[nPoints], std::back_inserter(worldPos));
@@ -340,11 +460,12 @@ void RawDepthPipeline::addIndexDataTriangles()
 	}
 }
 
-void RawDepthPipeline::addIndexData()
+//void RawDepthPipeline::addIndexData()
+void RawDepthPipeline::addIndexData(int width, int height)
 {
 	int n = 0;
-	int colSteps = depthCamWidth * 2;
-	int rowSteps = depthCamHeight - 1;
+	int colSteps = width * 2;
+	int rowSteps = height - 1;
 	for (int r = 0; r < rowSteps; r++) {
 		for (int c = 0; c < colSteps; c++) {
 			int t = c + r * colSteps;
@@ -356,10 +477,10 @@ void RawDepthPipeline::addIndexData()
 				indices.push_back(n);
 
 				if (t % 2 == 0) {
-					n += depthCamWidth;
+					n += width;
 				}
 				else {
-					(r % 2 == 0) ? n -= (depthCamWidth - 1) : n -= (depthCamWidth + 1);
+					(r % 2 == 0) ? n -= (width - 1) : n -= (width + 1);
 				}
 			}
 		}

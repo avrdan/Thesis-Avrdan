@@ -114,7 +114,22 @@ private:
 	bool bMirrorView;
 	bool bUseCalibParams;
 	bool bShowFrustum;
+	bool bUseCustomMatrices;
+	bool bFragmentShaderDebug;
 
 	glm::mat4 frustum;
+
+	double frustum_height;
+	double frustum_width;
+	double offset_x;
+	double offset_y;
+
+	float zRotation, yRotation, xRotation;
+	float zRotationCam, yRotationCam, xRotationCam;
+	glm::mat4 rotationMatrix;
+
+	void printGLMMatrix(glm::mat4 matrix, string name);
+
+	int activeTextureIndex;
 };
 

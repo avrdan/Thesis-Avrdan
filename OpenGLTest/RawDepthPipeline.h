@@ -33,7 +33,8 @@ public:
 
 	static const int depthCamWidth = 320;
 	static const int depthCamHeight = 240;
-
+	static const int rgbCamWidth = 640;
+	static const int rgbCamHeight = 480;
 	// data structure for mesh
 	struct sVertexType
 	{
@@ -62,9 +63,13 @@ public:
 	pxcUID pid;
 	PXCProjection *projection;
 	pxcU32 nPoints;
+	pxcU32 nPointsRGB;
+	PXCPoint3DF32* pos3dDepth;
 	PXCPoint3DF32* pos2d;
+	PXCPointF32* pos2dColor;
 	PXCPoint3DF32* pos3d;
 	std::vector<unsigned int> indices;
+	std::vector<unsigned short> depthData;
 
 	void renderFrame();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr renderFramePCL();
@@ -77,6 +82,9 @@ private:
 	UtilPipeline pp;
 	//UtilRender depth_render;
 	UtilRender *depth_render;
+	UtilRender *color_render;
+	// special depth values for saturated and low-confidence pixels
+	pxcF32 dvalues[2];
 	bool g_stop;
 	pxcStatus status;
 
@@ -95,7 +103,9 @@ private:
 	void printSelectivePointCloudData(int selector);
 	void createPointCloud(PXCImage::ImageData ddepth);
 	void createPointCloudMappedToWorld(PXCImage::ImageData ddepth);
-	void addIndexData();
+	void createPointCloudMappedToWorld(PXCImage::ImageData ddepth, PXCImage::ImageData dcolor);
+	//void addIndexData();
+	void addIndexData(int width, int height);
 	void addIndexDataTriangles();
 	void addIndexDataTriangleStrip();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr createPointCloudPCL(PXCImage::ImageData ddepth);

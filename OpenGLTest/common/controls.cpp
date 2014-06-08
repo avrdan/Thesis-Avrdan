@@ -70,6 +70,7 @@ float horizontalAngle = 3.14f; // (get a library with PI defined)
 // vertical angle : 0, look at the horizon
 //float verticalAngle = -2*3.14f;
 float verticalAngle = 0;
+float rotateZ = 0;
 // initial fov
 float initialFoV = 45.0f;
 
@@ -129,7 +130,7 @@ void computeMatricesFromInputs(GLFWwindow* window)
         
 
 	// Rotate X
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+	/*if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 	{
 
 		horizontalAngle -= (mouseSpeed   * float(1920 / 2 - 0)) * 3.14f / 180 * deltaTime;
@@ -151,7 +152,17 @@ void computeMatricesFromInputs(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
 	{
 		verticalAngle += (mouseSpeed   * float(1080 / 2 - 0)) * 3.14f / 180 * deltaTime;
+	}*/
+
+	/*if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+	{
+		rotateZ += 3.14f / 180 * deltaTime;
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
+	{
+		rotateZ -= 3.14f / 180 * deltaTime;
+	}*/
     //}
     
     // Direction : Spherical coordinates to Cartesian coordinates conversion
@@ -161,6 +172,8 @@ void computeMatricesFromInputs(GLFWwindow* window)
                 sin(verticalAngle),
                 cos(verticalAngle) * cos(horizontalAngle));
   
+	//direction.z += rotateZ;
+	
    /* vec3 direction(
                 cos(verticalAngle) * sin(horizontalAngle),
                 sin(verticalAngle) * sin(horizontalAngle),
