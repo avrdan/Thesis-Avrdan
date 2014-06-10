@@ -6,6 +6,7 @@ RawDepthPipeline::RawDepthPipeline()
 	// init data structure
 	pVertexMem = new sVertexType[depthCamWidth * depthCamHeight];
 
+	//pp.EnableImage(PXCImage::COLOR_FORMAT_VERTICES);
 	pp.EnableImage(PXCImage::COLOR_FORMAT_DEPTH);
 	
 	// also enable color image
@@ -110,7 +111,7 @@ void RawDepthPipeline::renderLoop()
 		PXCImage::ImageData ddepth;
 		
 		depth_image->AcquireAccess(PXCImage::ACCESS_READ, &ddepth);
-
+		
 		createPointCloud(ddepth);
 		//createPointCloudMappedToWorld(ddepth);
 		//printPointCloudData();
@@ -254,7 +255,7 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 			// raw depth data
 			
 			lastDepthValue = depthValue;
-			if (depthValue > 10 && depthValue < 2000)
+			if (depthValue > 10 && depthValue < 1500)
 			{
 				//screenPos[n].x = (pxcF32)x;
 				//screenPos[n].y = (pxcF32)y;
@@ -271,7 +272,7 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 	}
 
 	// convert to color first
-
+	
 	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
 	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());
 
@@ -408,7 +409,7 @@ void RawDepthPipeline::createPointCloud(PXCImage::ImageData ddepth)
 			// data.planes[0][y*cols+x];
 			pxcU16 depthValue = ((pxcU16*)ddepth.planes[0])[y*pinfo.imageInfo.width + x];
 
-			if (depthValue && depthValue < 1500)
+			if (depthValue && depthValue < 1500 && (depthValue != dvalues[0] && depthValue != dvalues[1]))
 			{
 				fZ = (((depthValue - 10) / 10.0f ) / 100.0f);
 				fU = fX / (float)depthCamWidth;

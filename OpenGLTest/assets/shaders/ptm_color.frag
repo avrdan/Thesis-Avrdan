@@ -11,6 +11,7 @@ in vec4 projCoords;
 out vec4 outputColor;
 
 vec4 red = vec4(1, 0, 0, 1);
+vec4 green = vec4(0, 1, 0, 1);
 
 void main (void)
 {
@@ -28,6 +29,11 @@ void main (void)
 			{
 				// ADD DEPTH DEBUG
 				outputColor = red;
+			}
+			else if(debug && depth > 1.1)
+			{
+				// ADD DEPTH DEBUG
+				outputColor = green;
 			}
 			else outputColor = vProjTexColor;
 		}

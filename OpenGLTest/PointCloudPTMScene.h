@@ -116,6 +116,7 @@ private:
 	bool bShowFrustum;
 	bool bUseCustomMatrices;
 	bool bFragmentShaderDebug;
+	bool bInitFrustum;
 
 	glm::mat4 frustum;
 
@@ -126,7 +127,10 @@ private:
 
 	float zRotation, yRotation, xRotation;
 	float zRotationCam, yRotationCam, xRotationCam;
+	float zTranslationCam, yTranslationCam, xTranslationCam;
+	float zTranslation, yTranslation, xTranslation;
 	glm::mat4 rotationMatrix;
+	glm::mat4 translationMatrix;
 
 	void printGLMMatrix(glm::mat4 matrix, string name);
 
