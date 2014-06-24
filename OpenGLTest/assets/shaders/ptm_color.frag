@@ -11,7 +11,10 @@ in vec4 projCoords;
 out vec4 outputColor;
 
 vec4 red = vec4(1, 0, 0, 1);
+vec4 orange = vec4(0.85, 0.64, 0.12, 1);
 vec4 green = vec4(0, 1, 0, 1);
+vec4 blue  = vec4(0, 0, 1, 1);
+vec4 magenta  = vec4(1, 0, 1, 1);
 
 void main (void)
 {
@@ -27,8 +30,12 @@ void main (void)
 		{
 			if(debug && depth < 1)
 			{
-				// ADD DEPTH DEBUG
-				outputColor = red;
+				if(depth > 0.9)
+					outputColor = blue;
+				else if(depth > 0.85)
+					// ADD DEPTH DEBUG
+					outputColor = magenta;
+					else outputColor = red;
 			}
 			else if(debug && depth > 1.1)
 			{

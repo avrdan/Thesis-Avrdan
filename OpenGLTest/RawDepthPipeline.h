@@ -21,8 +21,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 
-#include "pxcprojection.h";
-#include "pxcmetadata.h";
+#include "pxcprojection.h"
+#include "pxcmetadata.h"
 #include "pxcsegmentation.h"
 
 class RawDepthPipeline
@@ -98,6 +98,8 @@ private:
 	int numStripsRequired;
 	int numDegensRequired;
 	int verticesPerStrip;
+
+	int nSize;
 
 	void printPointCloudData();
 	void printSelectivePointCloudData(int selector);

@@ -140,14 +140,33 @@ int wmain(int argc, WCHAR* argv[])
 	//scene = new PCLReconstructionScene();
 	//scene = new PointCloudPCLScene();
 	//scene = new HPMCScene();
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
+	
+
+	/*glEnable(GL_POLYGON_SMOOTH);
+	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+	glEnable(GL_PERSPECTIVE_CORRECTION_HINT);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);*/
 	scene = new PointCloudPTMScene();
 
 	scene->initScene(window);
-
+	int nFrames = 10;
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
 	{
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		/*glClear(GL_ACCUM_BUFFER_BIT);
+		for (int i = 0; i < nFrames; i++)
+		{	
+			scene->renderScene(window);
+			glAccum(GL_ACCUM, 1 / nFrames);
+
+			glDrawBuffer(GL_FRONT);
+			glAccum(GL_RETURN, nFrames / (i+1));
+			glDrawBuffer(GL_BACK);
+		}*/
+
 		scene->renderScene(window);
 	}
 

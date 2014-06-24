@@ -135,5 +135,11 @@ private:
 	void printGLMMatrix(glm::mat4 matrix, string name);
 
 	int activeTextureIndex;
+	int nFrames;
+	int currFrameIndex;
+
+	glm::mat3 rotationMatDepthToColor;
+	glm::vec3 translationVecDepthToColor;
+	glm::mat4 mDepthToColor;
 };
 

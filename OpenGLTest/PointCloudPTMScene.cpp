@@ -217,7 +217,57 @@ PointCloudPTMScene::PointCloudPTMScene()
 	nearP = 0.1f;
 	farP = 1000.0f;
 
+	/* PLANE BASED CALIBRATION
+	
+	Focal Length:          fc = [ 10956.01853   20072.28464 ] ± [ 12669.46113   53359.22341 ]
+	Principal point:       cc = [ 959.50000   539.50000 ] ± [ 0.00000   0.00000 ]
 
+	*/
+	fu = 10027.93410;
+	fv = 15699.67859;
+	//fu = 15699.67859;
+	//fv = 10027.93410;
+	u0 = 959.50000;
+	v0 = 539.50000;
+	nearP = 0.1f;
+	farP = 1000.0f;
+
+	/*
+		STRUCTURED LIGHT CALIB (WITH TRIPOD)
+
+		PRO INTRINSIC:
+		8.237734e+001  0.000000e+000  9.595000e+002
+		0.000000e+000  8.237734e+001  8.955700e+002
+		0.000000e+000  0.000000e+000  1.000000e+000
+
+		PRO EXTRINSIC:
+		9.999946e-001 -2.607081e-003 -1.982735e-003  2.482408e-003 
+		2.972938e-003  4.683975e-001  8.835129e-001  5.700335e-001 
+		-1.374682e-003 -8.835140e-001  4.684027e-001  8.216177e-001 
+
+		CAM INTRINSIC:
+		2.879222e+002  0.000000e+000  3.195000e+002
+		0.000000e+000  2.879222e+002  2.395000e+002
+		0.000000e+000  0.000000e+000  1.000000e+000
+
+	*/
+
+	fu = 8.237734f * 10;
+	fv = 8.237734f * 10;
+	u0 = 9.595000f * 100;
+	v0 = 8.955700f * 100;
+	nearP = 0.1f;
+	farP = 1000.0f;
+
+	/*5.257451e+001  0.000000e+000  9.595000e+002 
+						 0.000000e+000  5.257451e+001  5.395000e+002 
+						 0.000000e+000  0.000000e+000  1.000000e+000 */
+	fu = 1.4686730718284474f * 100;
+	fv = 1.4686730718284474f * 100;
+	u0 = 9.595000f * 100;
+	v0 = 5.395000f * 100;
+	nearP = 0.1f;
+	farP = 1000.0f;
 	// cam intrinsic
 	/*fu = 1.534547f * 100;
 	fv = 1.534547f * 100;
@@ -225,6 +275,68 @@ PointCloudPTMScene::PointCloudPTMScene()
 	v0 = 2.395000f * 100;
 	nearP = 0.1f;
 	farP = 1000.0f;*/
+
+
+	/* ofxActiveScan LAPACK diagonal matrix error
+	   %YAML:1.0
+	camIntrinsic: !!opencv-matrix
+	   rows: 3
+	   cols: 3
+	   dt: d
+	   data: [ 4.0374727177251369e+007, 0., 3.1950000000000063e+002, 0.,
+		   4.0374727177251369e+007, 2.3950000000000077e+002, 0., 0., 1. ]
+	camDistortion: 8.1026373856241702e-007
+	proIntrinsic: !!opencv-matrix
+	   rows: 3
+	   cols: 3
+	   dt: d
+	   data: [ 1.4686730718284474e+002, 0., 9.5949999999995066e+002, 0.,
+		   1.4686730718284474e+002, 5.3950000000005389e+002, 0., 0., 1. ]
+	proDistortion: 1.6771485760577700e-006
+	proExtrinsic: !!opencv-matrix
+	   rows: 3
+	   cols: 4
+	   dt: d
+	   data: [ 9.9512832774415283e-001, 9.6083017512584301e-003,
+		   -9.8118764049405879e-002, 9.8116817556578487e-002,
+		   1.1557505277705834e-003, -9.9630809450127100e-001,
+		   -8.5841977330233493e-002, 8.5840842647559992e-002,
+		   -9.8581314465996925e-002, 8.5310382537552507e-002,
+		   -9.9146551279883288e-001, 9.9146580366955972e-001 ]
+		*/
+		/*
+		%YAML:1.0
+	camIntrinsic: !!opencv-matrix
+	   rows: 3
+	   cols: 3
+	   dt: d
+	   data: [ 8.6130405325614177e+001, 0., 3.1950000000000000e+002, 0.,
+		   8.6130405325614177e+001, 2.3950000000000000e+002, 0., 0., 1. ]
+	camDistortion: -2.3384479671009299e-007
+	proIntrinsic: !!opencv-matrix
+	   rows: 3
+	   cols: 3
+	   dt: d
+	   data: [ 3.1183991748016678e+002, 0., 9.5950000000000000e+002, 0.,
+		   3.1183991748016678e+002, 5.3950000000000000e+002, 0., 0., 1. ]
+	proDistortion: -2.9923238202665282e-007
+	proExtrinsic: !!opencv-matrix
+	   rows: 3
+	   cols: 4
+	   dt: d
+	   data: [ -6.3130502809375055e-001, 4.5280180168695242e-002,
+		   7.7421164211566795e-001, -9.0500915844368901e-001,
+		   -3.4976844531106721e-002, -9.9894065805775833e-001,
+		   2.9902876546890243e-002, -2.5473025906725736e-002,
+		   7.7474549488860900e-001, -8.2016439219341399e-003,
+		   6.3222001802124395e-001, 4.2462871792214074e-001 ]
+	   */
+	fu = 3.1183991748016678f * 100;
+	fv = 3.1183991748016678f * 100;
+	u0 = 9.595000f * 100;
+	v0 = 5.395000f * 100;
+	nearP = 0.1f;
+	farP = 1000.0f;
 
 	int viewport[4] = { 0, 0, 0, 0 };
 	
@@ -262,6 +374,9 @@ PointCloudPTMScene::PointCloudPTMScene()
 	fovy = 1.0f / (fu/2.5f / 1080.0f * 2);
 	aspect = 1980.0f / 1080 * fv / fu;
 
+	//fovy = 2 * glm::atan(1080 / 2.0f * fv);
+	//aspect = 1980.0f / 1080 * fv / fu;
+
 	cout << "Aspect: " << aspect << endl;
 	cout << "FOV Y:" << fovy << endl;
 
@@ -286,6 +401,17 @@ PointCloudPTMScene::PointCloudPTMScene()
 	zTranslation = 0;
 
 	activeTextureIndex = 5;
+	nFrames = 10;
+	currFrameIndex = 0;
+
+	/* 3D Depth to 3D Color
+		0.999997 - 0.001236 0.002095 - 0.001285 - 0.999726 0.023357 - 0.002065 0.023359 0.999725 0.026000 - 0.000508 - 0.000863
+	*/
+	mDepthToColor = glm::mat4(0.999997, -0.001236, 0.002095, -0.001285,
+		-0.999726, 0.023357, -0.002065, 0.023359,
+		0.999725, 0.026000, -0.000508, -0.000863,
+		0,				0,		0,			1);
+	
 }
 
 
@@ -307,10 +433,10 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 	pipeline->setProjection3D(pFovY, 16.0f / 9.0f, 0.1f, 1000.0f);
 	
 	//pipeline->setProjection3D(fovy - 7, 16.0f / 9.0f, 0.1f, 10000.0f);
-	glm::mat4 *projMatrix = pipeline->getProjectionMatrix();
-	*projMatrix = glm::scale(*projMatrix, glm::vec3(1.0f, -1.0f, 1.0f));
+	//glm::mat4 *projMatrix = pipeline->getProjectionMatrix();
+	//*projMatrix = glm::scale(*projMatrix, glm::vec3(1.0f, -1.0f, 1.0f));
 	//*projMatrix  = glm::scale(*projMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
-	pipeline->setProjectionMatrix(*projMatrix);
+	//pipeline->setProjectionMatrix(*projMatrix);
 	//pipeline->setProjectionMatrix(glm::inverse(frustum));
 	//pipeline->setProjectionMatrix(frustum);
 	
@@ -342,7 +468,9 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 	//projectorP = glm::perspective(fovy + 5, aspect, pNear, pFar);
 	//projectorP = glm::perspective(fovy, aspect, pNear, pFar);
 
-	projectorP = glm::perspective(30.5f, aspect, pNear, pFar);
+	//projectorP = glm::perspective(30.5f, aspect, pNear, pFar);
+	projectorP = glm::perspective(-10.0f, aspect, pNear, pFar);
+	
 	/*projectorP = glm::mat4(-2.86342, -0, -0, -0,
 		0, 5.2496, 0, 0,
 		0, 0, -1.0002, -1,
@@ -351,14 +479,21 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 	//projectorP = glm::scale(projectorP, glm::vec3(-1.0f, 1.0f, 1.0f));
 	//projectorP = glm::scale(projectorP, glm::vec3(1.0f, 1.0f, -1.0f));
 
-	//projectorP = glm::scale(projectorP, glm::vec3(1.0f, -1.0f, 1.0f));
+	projectorP = glm::scale(projectorP, glm::vec3(1.0f, -1.0f, 1.0f));
 	//projectorP = glm::perspective(fovy, aspect, pNear, pFar);
 	//projectorP = glm::ortho<float>(-100, 100, -100, 100, -100, 200);
 	//projectorOrigin = glm::vec3(0.0f, -0.01f, 0.10f);
 	//projectorOrigin = glm::vec3(0.0f, -0.015f, 0.1f);
 	//projectorOrigin = glm::vec3(0.0f, -0.002f, 0.1f);
 	//projectorOrigin = glm::vec3(0.0f, -0.002f, 0.1f);
-	projectorOrigin = glm::vec3(0.0f, 0.0f, -1.6f);
+
+	//projectorOrigin = glm::vec3(0.0f, 0.0f, -0.2f);
+	projectorOrigin = glm::vec3(0.0f, 0.1f, -2.0f);
+	//projectorOrigin = glm::vec3(0.0f, 0.0f, 1.6f);
+	
+	//projectorOrigin = glm::vec3(0.0f, 0.0f, -0.5f);
+	//projectorOrigin = glm::vec3(0.0f, 0.0f, 1.6f);
+
 	//projectorOrigin = glm::vec3(0.0f, -0.002f, 0.1f);
 	//projectorOrigin = glm::vec3(0.0f, -0.0f, 0.2f);
 	//projectorOrigin = glm::vec3(0.0f, -0.01f, 0.002f);
@@ -368,7 +503,7 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 		projectorTarget,	 // project on object at origin 
 		glm::vec3(0.0f, 1.0f, 0.0f)   // Y axis is up
 		);
-
+	//projectorV = glm::inverse(projectorV);
 	/*projectorV = glm::mat4(0.994595, -0.0134485, -0.102956, 0,
 		6.13301e-005, 0.991652, -0.128941, 0,
 		0.103831, 0.128237, 0.986293, 0,
@@ -437,7 +572,8 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 
 	const char *cTextureNames[] = { "biohazard_512x512.jpg", "A_Smiley.jpg", "3dcarrush.jpg",
 		"3D_Scene_011.jpg", "outdoor_free_3d_scene_by_djeric.jpg", "grid_512k.jpg",
-		"grid-xxl.jpg", "grid-green.jpg", "tuscany.jpg", "fish-goldfish-texture-2048x2048.jpg", "random-text-2048x2048.jpg" };
+		"grid-xxl.jpg", "grid-green.jpg", "tuscany.jpg", "fish-goldfish-texture-2048x2048.jpg", "random-text-2048x2048.jpg",
+		"grid_with_corners.jpg"};
 	vector<string> sTextureNames(cTextureNames, &cTextureNames[sizeof(cTextureNames) / sizeof(cTextureNames[0])]);
 	loadAllTextures(sTextureNames);
 	glEnable(GL_TEXTURE_2D);
@@ -458,6 +594,21 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 
 void PointCloudPTMScene::renderScene(GLFWwindow *window)
 {
+	/*if (currFrameIndex == nFrames)
+	{
+		glAccum(GL_RETURN, 1.0);
+		currFrameIndex = 0;
+	}
+	else
+	{
+		if (currFrameIndex == 0)
+		{
+			glClear(GL_ACCUM_BUFFER_BIT);
+		}
+		glAccum(GL_ACCUM, 1/nFrames);
+		currFrameIndex++;
+	}*/
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	rdp->renderFrame();
 	timer += getDeltaTime();
@@ -472,10 +623,15 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		// DEFORMATION OFF
 		glUseProgram(programQuadID);
 		GLuint texID = glGetUniformLocation(programQuadID, "tex");
+		int iQuadDebugLoc = glGetUniformLocation(programQuadID, "debug");
+
+	
+
 		// Bind our texture in Texture Unit 0
 		tTextures[activeTextureIndex].bindTexture();
 		// Set our "renderedTexture" sampler to user Texture Unit 0
 		glUniform1i(texID, 0);
+		glUniform1i(iQuadDebugLoc, true);
 
 		vboDebug.bindVBO();
 		glEnableVertexAttribArray(0);
@@ -496,6 +652,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		if (bUseMainCam)
 		{
 			mModelView = getViewMatrix();
+			mModelView = glm::scale(mModelView, glm::vec3(1.0f, 1.0f, -1.0f));
 			if (bUseCalibParams)
 			{
 				//pipeline->setProjection3D(fovy, 16.0f / 9.0f, 0.1f, 1000.0f);
@@ -506,9 +663,12 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				frustum = *pipeline->getProjectionMatrix();
 				pipeline->setProjectionMatrix(glm::inverse(frustum));*/
 
-				pipeline->setProjection3D(fovy, aspect, 0.1f, 1000.0f);
+				//pipeline->setProjection3D(fovy, aspect, 0.1f, 1000.0f);
+				
 				//pipeline->setFrustum(-frustum_width - offset_x, frustum_width - offset_x, -frustum_height - offset_y, frustum_height - offset_y, nearP, farP);
-				frustum = *pipeline->getProjectionMatrix();
+				
+				//frustum = *pipeline->getProjectionMatrix();
+				
 				//frustum = glm::scale(frustum, glm::vec3(-1.0f, 1.0f, 1.0f));
 				pipeline->setProjectionMatrix(frustum);
 				mModelView = mExtrinsicMatrix;
@@ -807,6 +967,98 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 					X translation:0Y translation:0Z translation:0--=================================
 					==========--
+
+					THE NEW TRIPOD(points still not aligned, tested with color debug)
+					==============
+
+					--===========================================--
+					THE PERSPECTIVE MATRIX
+					2.70929, 0, 0, 0
+					0, 4.96704, 0, 0
+					0, 0, -1.0002, -1
+					0, 0, -0.20002, 0
+
+					THE MODELVIEW MATRIX
+					0.999999, 0, -0.00159255, 0
+					0, 1, 0, 0
+					-0.00159255, -0, -0.999999, -0
+					-0.000233089, 0.0268609, -0.537013, 1
+
+					THE CURRENT MATRIX (TRANSFORMED MV)
+					0.999999, 0, -0.00159255, 0
+					0, 1, 0, 0
+					-0.00159255, 0, -0.999999, 0
+					-0.000233089, 0.00955734, -0.537013, 1
+
+					PROJECTOR T + R:
+					X translation: 0
+					Y translation: -0.0173035
+					Z translation: 0
+					X rotation: 0
+					Y rotation: 0
+					Z rotation: 0
+					--===========================================--
+
+					PRETTY GOOD
+
+					--===========================================--
+					THE PERSPECTIVE MATRIX
+					2.73027, 0, 0, 0
+					0, 5.00549, 0, 0
+					0, 0, -1.0002, -1
+					0, 0, -0.20002, 0
+
+					THE MODELVIEW MATRIX
+					0.999999, 0, -0.00159255, 0
+					0, 1, 0, 0
+					-0.00159255, -0, -0.999999, -0
+					0.00268487, 0.0339429, -0.547237, 1
+
+					THE CURRENT MATRIX (TRANSFORMED MV)
+					0.999999, 0, -0.00159255, 0
+					0, 1, 0, 0
+					-0.00159255, 0, -0.999999, 0
+					0.00268487, 0.0339429, -0.547237, 1
+
+					PROJECTOR T + R:
+					X translation: 0
+					Y translation: 0
+					Z translation: 0
+					X rotation: 0
+					Y rotation: 0
+					Z rotation: 0
+					--===========================================--
+
+					SEEMS KIND OF OK
+
+					--===========================================--
+					THE PERSPECTIVE MATRIX
+					2.68438, 0, 0, 0
+					0, 4.92136, 0, 0
+					0, 0, -1.0002, -1
+					0, 0, -0.20002, 0
+
+					THE MODELVIEW MATRIX
+					0.999999, 0, -0.00159255, 0
+					0, 1, 0, 0
+					-0.00159255, -0, -0.999999, -0
+					0.00193205, 0.0324989, -0.528629, 1
+
+					THE CURRENT MATRIX (TRANSFORMED MV)
+					0.999999, 0, -0.00159255, 0
+					0, 1, 0, 0
+					-0.00159255, 0, -0.999999, 0
+					0.00193205, 0.0324989, -0.528629, 1
+
+					PROJECTOR T + R:
+					X translation: 0
+					Y translation: 0
+					Z translation: 0
+					X rotation: 0
+					Y rotation: 0
+					Z rotation: 0
+					--===========================================--
+
 				*/
 				if (bMirrorView)
 				{
@@ -823,38 +1075,124 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 					pipeline->setProjectionMatrix(frustum);
 
-					mModelView = glm::mat4(-0.998744, -0.00260859, 0.0500457, 0,
-						4.01134e-005, 0.998602, 0.0528518, 0,
-						-0.0501137, 0.0527874, -0.997348, 0,
-						-0.029355, 0.0372815, -1.90924, 1);*/
+					mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
+					0, 1, 0, 0,
+					-0.00159255, -0, -0.999999, -0,
+					0.00193205, 0.0324989, -0.528629, 1);*/
 				}
 				else
 				{
 					if (bInitFrustum)
 					{
-						frustum = glm::mat4(-2.86342, -0, -0, -0,
-							0, 5.2496, 0, 0,
+						/*frustum = glm::mat4(2.68438, 0, 0, 0,
+							0, 4.92136, 0, 0,
 							0, 0, -1.0002, -1,
-							0, 0, -0.20002, 0);
+							0, 0, -0.20002, 0);*/
 
 						bInitFrustum = false;
 					}
 
 					pipeline->setProjectionMatrix(frustum);
 
-					mModelView = glm::mat4(0.994595, -0.0134485, -0.102956, 0,
-						6.13301e-005, 0.991652, -0.128941, 0,
-						0.103831, 0.128237, 0.986293, 0,
-						0.0666455, 0.100126, -0.377363, 1);
+					/*mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
+						0, 1, 0, 0,
+						- 0.00159255, -0, -0.999999, -0,
+						0.00268487, 0.0339429, -0.547237, 1);*/
+					
+					/*mModelView = glm::mat4(0.9893, -0.0883, 0.1160, -0.0403 * 1000,
+						-0.0530, 0.5233, 0.8505, -0.4916 * 1000,
+						0.1358, -0.8476, 0.5130, 2.8325 * 1000,
+						0, 0, 0, 1);
+					mModelView = glm::inverse(mModelView);*/
+
+					
+
+					/*mModelView = glm::inverse(mDepthToColor)*glm::mat4(9.999946 * 0.1, -2.607081 * 0.001, -1.982735* 0.001, 2.482408* 0.001,
+						2.972938* 0.001, 4.683975 * 0.1, 8.835129 * 0.1, 5.700335 * 0.1,
+						-1.374682* 0.001, -8.835140 * 0.1, 4.684027 * 0.1, 8.216177 * 0.1,
+						0,						0,				0,				1);*/
+					mModelView = glm::mat4(9.999946 * 0.1, -2.607081 * 0.001, -1.982735* 0.001, 2.482408* 0.001,
+						2.972938* 0.001, 4.683975 * 0.1, 8.835129 * 0.1, 5.700335 * 0.1,
+						-1.374682* 0.001, -8.835140 * 0.1, 4.684027 * 0.1, 8.216177 * 0.1,
+						0, 0, 0, 1);
+					
+					/*projectorTranslation = glm::vec3(2.482408* 0.001, 5.700335 * 0.1, 8.216177 * 0.1);
+					projectorRotation = glm::mat3(9.999946 * 0.1, -2.607081 * 0.001, -1.982735* 0.001,
+						2.972938* 0.001, 4.683975 * 0.1, 8.835129 * 0.1, 
+						-1.374682* 0.001, -8.835140 * 0.1, 4.684027 * 0.1);
+
+
+					/* Calib with encoding from ofxActiveScan
+					Intrinsic:
+						 5.257451e+001  0.000000e+000  9.595000e+002 
+						 0.000000e+000  5.257451e+001  5.395000e+002 
+						 0.000000e+000  0.000000e+000  1.000000e+000 
+					Extrinsic:
+						 9.223203e-001  4.949715e-002 -3.832431e-001  2.838712e-001 
+						-4.587328e-002 -9.707251e-001 -2.357720e-001  1.804606e-001 
+						-3.836937e-001  2.350379e-001 -8.930489e-001  9.417277e-001 
+					*/
+					//mModelView *= mDepthToColor;
+					mModelView = glm::mat4(9.223203 * 0.1, 4.949715 * 0.01, -3.832431* 0.1, 2.838712* 0.1,
+						-4.587328* 0.01, -9.707251 * 0.1, -2.357720 * 0.1, 1.804606 * 0.1,
+						-3.836937* 0.1, 2.350379 * 0.1, -8.930489 * 0.1, 9.417277 * 0.1,
+						0, 0, 0, 1);
+
+
+					// and again...
+					/*9.9512832774415283e-001, 9.6083017512584301e-003,-9.8118764049405879e-002, 9.8116817556578487e-002,
+						1.1557505277705834e-003, -9.9630809450127100e-001,-8.5841977330233493e-002, 8.5840842647559992e-002,
+						-9.8581314465996925e-002, 8.5310382537552507e-002,-9.9146551279883288e-001, 9.9146580366955972e-001*/
+					mModelView = glm::mat4(9.9512832774415283 * 0.1, 9.6083017512584301* 0.001, -9.8118764049405879* 0.01, 9.8116817556578487* 0.01,
+						1.1557505277705834* 0.001, -9.9630809450127100 * 0.1, -8.5841977330233493 * 0.01, 8.5840842647559992 * 0.01,
+						-9.8581314465996925 * 0.01, 8.5310382537552507 * 0.01, -9.9146551279883288 * 0.1, 9.9146580366955972 * 0.1,
+						0, 0, 0, 1);
+
+					// and yet again...
+					/*  data: [ -6.3130502809375055e-001, 4.5280180168695242e-002, 7.7421164211566795e-001, -9.0500915844368901e-001,
+					   -3.4976844531106721e-002, -9.9894065805775833e-001,2.9902876546890243e-002, -2.5473025906725736e-002,
+					   7.7474549488860900e-001, -8.2016439219341399e-003, 6.3222001802124395e-001, 4.2462871792214074e-001 ]*/
+					mModelView *= mDepthToColor;
+					mModelView = glm::mat4(-6.3130502809375055 * 0.1, 4.5280180168695242* 0.01, 7.7421164211566795* 0.01, -9.0500915844368901* 0.1,
+						-3.4976844531106721* 0.01, -9.9894065805775833 * 0.1, 2.9902876546890243 * 0.01, -2.5473025906725736 * 0.01,
+						7.7474549488860900 * 0.1, -8.2016439219341399 * 0.001, 6.3222001802124395 * 0.1, 4.2462871792214074 * 0.1,
+						0, 0, 0, 1);
+					//mModelView = glm::transpose(mModelView);
+					/*mModelView = glm::lookAt(projectorTranslation, // projector origin
+					glm::vec3(projectorTranslation.x + 100 * projectorRotation[2][0],
+					projectorTranslation.y + 100 * projectorRotation[2][1],
+					projectorTranslation.z + 100 * projectorRotation[2][2]),	 // project on object..
+					glm::vec3(projectorRotation[1][0], projectorRotation[1][1], projectorRotation[1][2])   // Y axis is up
+					);*/
+
+					/*mModelView = glm::lookAt(projectorTranslation, // projector origin
+						glm::vec3(projectorTranslation.x + 100 * projectorRotation[0][2],
+						projectorTranslation.y + 100 * projectorRotation[1][2],
+						projectorTranslation.z + 100 * projectorRotation[2][2]),	 // project on object..
+						glm::vec3(projectorRotation[0][1], projectorRotation[1][1], projectorRotation[2][1])   // Y axis is up
+						);*/
+					
+					//mModelView = glm::inverse(mModelView);
+					
+					mModelView = glm::rotate(mModelView, 180.0f, glm::vec3(1, 0, 0));
+					
+					//mModelView = glm::rotate(mModelView, 90.0f, glm::vec3(0, 0, 1));
+					mModelView = glm::inverse(mModelView);
+					
+					//mModelView = glm::rotate(mModelView, 90.0f, glm::vec3(1, 0, 0));
+					// apply depth to color transform
+					//mModelView *= mDepthToColor;
 				}
 			}
 			else
 			{
-				pipeline->setProjection3D(pFovY, aspect, nearP, farP);
-				frustum = *pipeline->getProjectionMatrix();
-				frustum = glm::scale(frustum, glm::vec3(-1.0f, 1.0f, 1.0f));
+				//pipeline->setProjection3D(pFovY, aspect, nearP, farP);
+				//frustum = *pipeline->getProjectionMatrix();
+				
+				//frustum = glm::scale(frustum, glm::vec3(-1.0f, 1.0f, 1.0f));
 				//frustum = glm::scale(frustum, glm::vec3(1.0f, -1.0f, 1.0f));
-				pipeline->setProjectionMatrix(frustum);
+				
+				//pipeline->setProjectionMatrix(frustum);
 			}
 			//mModelView = calibratedView;
 			
@@ -906,12 +1244,12 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		//mCurrent = glm::translate(mModelView, glm::vec3(0.0f, 0.0f, -1.0f));
 		//mCurrent = glm::rotate(mCurrent, 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
 		
-		mCurrent = glm::rotate(mCurrent, -180.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		//mCurrent = glm::rotate(mCurrent, -180.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		
 		// also allow rotation
-		/*mCurrent = glm::rotate(mCurrent, xRotation, glm::vec3(1.0f, 0.0f, 0.0f));
+		mCurrent = glm::rotate(mCurrent, xRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 		mCurrent = glm::rotate(mCurrent, yRotation, glm::vec3(0.0f, 1.0f, 0.0f));
-		mCurrent = glm::rotate(mCurrent, zRotation, glm::vec3(0.0f, 0.0f, 1.0f));*/
+		mCurrent = glm::rotate(mCurrent, zRotation, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		mCurrent = glm::translate(mCurrent, glm::vec3(xTranslation, yTranslation, zTranslation));
 		
@@ -1091,6 +1429,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	{
 		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_R) != GLFW_RELEASE)
 		{
+			// reset camera
 			setResetMouseLook(true);
 			xTranslationCam = 0;
 			yTranslationCam = 0;
@@ -1098,6 +1437,16 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			xRotationCam = 0;
 			yRotationCam = 0;
 			zRotationCam = 0;
+
+			// reset projector
+			xTranslation = 0;
+			yTranslation = 0;
+			zTranslation = 0;
+			xRotation = 0;
+			yRotation = 0;
+			zRotation = 0;
+
+
 			bInitFrustum = true;
 			timer = 0;
 		}
@@ -1152,9 +1501,13 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			cout << endl;
 			printGLMMatrix(mCurrent, "THE CURRENT MATRIX (TRANSFORMED MV)");
 			cout << endl;
-			cout << "X translation:" << xTranslation;
-			cout << "Y translation:" << yTranslation;
-			cout << "Z translation:" << zTranslation;
+			cout << "PROJECTOR T + R:" << endl;
+			cout << "X translation: " << xTranslation << endl;
+			cout << "Y translation: " << yTranslation << endl;
+			cout << "Z translation: " << zTranslation << endl;
+			cout << "X rotation: " << xRotation << endl;
+			cout << "Y rotation: " << yRotation << endl;
+			cout << "Z rotation: " << zRotation << endl;
 			cout << "--===========================================--" << endl << endl;
 			timer = 0;
 		}
@@ -1213,7 +1566,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			pFovY += 10*getDeltaTime();
 			pipeline->setProjection3D(pFovY, aspect, nearP, farP);
 			frustum = *pipeline->getProjectionMatrix();
-			frustum = glm::scale(frustum, glm::vec3(-1.0f, 1.0f, 1.0f));
+			//frustum = glm::scale(frustum, glm::vec3(-1.0f, 1.0f, 1.0f));
 			pipeline->setProjectionMatrix(frustum);
 			
 		}
@@ -1226,7 +1579,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			pFovY -= 10 * getDeltaTime();
 			pipeline->setProjection3D(pFovY, aspect, nearP, farP);
 			frustum = *pipeline->getProjectionMatrix();
-			frustum = glm::scale(frustum, glm::vec3(-1.0f, 1.0f, 1.0f));
+			//frustum = glm::scale(frustum, glm::vec3(-1.0f, 1.0f, 1.0f));
 			pipeline->setProjectionMatrix(frustum);
 		
 		}
@@ -1234,37 +1587,37 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		if (glfwGetKey(window, GLFW_KEY_INSERT) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_INSERT) != GLFW_RELEASE)
 		{
 			//	zRotation += 3.14f / 180 * getDeltaTime();
-			zTranslation += getDeltaTime();
+			zTranslation += getDeltaTime() / 10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_DELETE) != GLFW_RELEASE)
 		{
 			//	zRotation -= 3.14f / 180 * getDeltaTime();
-			zTranslation -= getDeltaTime();
+			zTranslation -= getDeltaTime() / 10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_PAGE_UP) != GLFW_RELEASE)
 		{
 			//	zRotation += 3.14f / 180 * getDeltaTime();
-			yTranslation += getDeltaTime();
+			yTranslation += getDeltaTime()/10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_PAGE_DOWN) != GLFW_RELEASE)
 		{
 			//	zRotation -= 3.14f / 180 * getDeltaTime();
-			yTranslation -= getDeltaTime();
+			yTranslation -= getDeltaTime() / 10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_HOME) != GLFW_RELEASE)
 		{
 		//	zRotation += 3.14f / 180 * getDeltaTime();
-			xTranslation += getDeltaTime();
+			xTranslation += getDeltaTime() / 10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_END) != GLFW_RELEASE)
 		{
 		//	zRotation -= 3.14f / 180 * getDeltaTime();
-			xTranslation -= getDeltaTime();
+			xTranslation -= getDeltaTime() / 10;
 		}
 
 		// Rotate X
@@ -1369,6 +1722,37 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 					activeTextureIndex = 0;
 				timer = 0;
 			}
+		}
+
+		// NEED 6 KEYS
+		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_C) != GLFW_RELEASE)
+		{
+			xRotation += 3.14f / 180 * getDeltaTime();
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_Z) != GLFW_RELEASE)
+		{
+			xRotation -= 3.14f / 180 * getDeltaTime();
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_B) != GLFW_RELEASE)
+		{
+			yRotation += 3.14f / 180 * getDeltaTime();
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_N) != GLFW_RELEASE)
+		{
+			yRotation -= 3.14f / 180 * getDeltaTime();
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_COMMA) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_COMMA) != GLFW_RELEASE)
+		{
+			zRotation += 3.14f / 180 * getDeltaTime();
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_PERIOD) != GLFW_RELEASE)
+		{
+			zRotation -= 3.14f / 180 * getDeltaTime();
 		}
 
 	// end user interaction

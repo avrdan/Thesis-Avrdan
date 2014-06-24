@@ -89,6 +89,8 @@ RawDepthPipeline::RawDepthPipeline()
 	//addIndexData();
 	//addIndexDataTriangles();
 	//addIndexDataTriangleStrip();
+	nSize = 5;
+
 }
 
 
@@ -271,11 +273,32 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 		}
 	}
 
+	n = 0;
+
+	/*for (int y = nSize; y < depthCamHeight; y++)
+	{
+		for (int x = nSize; x < depthCamWidth; x++)
+		{
+			if (pos2d[x * depthCamHeight + y].z)
+			{
+				// apply median filter
+				//pos2d[x * depthCamHeight + y]
+				PXCPoint3DF32* temp;
+				for (int i = 0; i < nSize; i++)
+					for (int j = 0; j < nSize; j++)
+					{
+						temp[j*nSize + i] = pos2d[(x-j) * depthCamHeight + (y-i)];
+					}
+			}
+			n++;
+		}
+	}*/
+
 	// convert to color first
 	
 	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
 	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());
-
+	
 	// use this to align depth with color
 	//projection->MapDepthToColorCoordinates
 
