@@ -160,5 +160,8 @@ private:
 	bool runGoogleMap;
 	bool runDeformScene;
 	bool runDeformText;
+
+	int getRandomNumber(int n);
+	void randomizeDistortionState(int bound);
 };
 

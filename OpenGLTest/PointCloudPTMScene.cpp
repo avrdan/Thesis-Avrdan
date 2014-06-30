@@ -1715,6 +1715,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F1) != GLFW_RELEASE)
 			{
+				randomizeDistortionState(100);
 				// make sure we do not run other states
 				runGoogleMap = false;
 				runVolumeSlicing = false;
@@ -1736,6 +1737,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F2) != GLFW_RELEASE)
 			{
+				randomizeDistortionState(100);
 				// make sure we do not run other states
 				runGoogleMap = false;
 				runVolumeSlicing = false;
@@ -1757,6 +1759,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F3) != GLFW_RELEASE)
 			{
+				randomizeDistortionState(100);
 				// make sure we do not run other states
 				runDeformScene = false;
 				runVolumeSlicing = false;
@@ -1775,9 +1778,10 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		// TASK 4
 		if (timer >= 0.25f)
 		{
-		
+			
 			if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F4) != GLFW_RELEASE)
 			{
+				randomizeDistortionState(100);
 				// make sure we do not run other states
 				runDeformScene = false;
 				runGoogleMap = false;
@@ -1793,12 +1797,15 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			}
 		}
 
-		// TASK 4
+		// NO TASK / DEFAULT TEXTURE
 		if (timer >= 0.25f)
 		{
 
 			if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F5) != GLFW_RELEASE)
 			{
+				// do not need to randomize in this case
+				bDebugTexture = false;
+
 				// make sure we do not run ANY states
 				runDeformScene = false;
 				runGoogleMap = false;
@@ -2038,4 +2045,22 @@ GLfloat PointCloudPTMScene::getGLDepth(int x, int y, glm::mat4 mModelView, glm::
 	//return depth_z;
 	//return final.z * 1000;
 	return final.z;
+}
+
+int PointCloudPTMScene::getRandomNumber(int n)
+{
+	return rand() % n;
+}
+
+void PointCloudPTMScene::randomizeDistortionState(int bound)
+{
+	// seed not used
+	// it will run the same way each time it starts,
+	// but this should be fine
+	int threshold = getRandomNumber(bound);
+
+	if (threshold <= 50)
+		bDebugTexture = false;
+	else
+		bDebugTexture = true;
 }

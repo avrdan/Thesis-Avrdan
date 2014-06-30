@@ -24,7 +24,7 @@
 #include "static_geometry.h"
 
 #include <iostream>
-
+#include <stdlib.h>
 class AbstractScene
 {
 public:
