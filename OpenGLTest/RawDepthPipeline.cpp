@@ -256,6 +256,9 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 			//pos2d[n].z = undefined;
 			// raw depth data
 			
+			if (x == depthCamWidth / 2 && y == depthCamHeight / 2)
+				centerDepth = depthValue;
+
 			lastDepthValue = depthValue;
 			if (depthValue > 10 && depthValue < 1500)
 			{

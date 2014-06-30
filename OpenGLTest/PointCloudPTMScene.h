@@ -129,6 +129,7 @@ private:
 	float zRotationCam, yRotationCam, xRotationCam;
 	float zTranslationCam, yTranslationCam, xTranslationCam;
 	float zTranslation, yTranslation, xTranslation;
+	float zTranslationPrjTotal, yTranslationPrjTotal, xTranslationPrjTotal;
 	glm::mat4 rotationMatrix;
 	glm::mat4 translationMatrix;
 
@@ -141,5 +142,23 @@ private:
 	glm::mat3 rotationMatDepthToColor;
 	glm::vec3 translationVecDepthToColor;
 	glm::mat4 mDepthToColor;
+
+	glm::mat4 kRGB, kDepth;
+	glm::mat4 calibRotMat;
+
+	GLfloat getGLDepth(int x, int y, glm::mat4 mModelView, glm::mat4 frustum);
+
+	bool runVolumeSlicing;
+	bool initDepthState;
+	float initDepth;
+	bool continuousMode;
+	float volumeSliceStep;
+
+	glm::mat4 savedMV;
+	glm::mat4 savedP;
+
+	bool runGoogleMap;
+	bool runDeformScene;
+	bool runDeformText;
 };
 

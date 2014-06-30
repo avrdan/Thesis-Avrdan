@@ -75,6 +75,8 @@ public:
 	pcl::PointCloud<pcl::PointXYZ>::Ptr renderFramePCL();
 	std::vector<PXCPoint3DF32> worldPos;
 	std::vector<PXCPoint3DF32> screenPos;
+
+	float centerDepth;
 private:
 
 	PXCCapture::VideoStream::ProfileInfo pinfo;

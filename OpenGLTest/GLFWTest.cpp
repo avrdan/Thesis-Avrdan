@@ -85,7 +85,9 @@ int wmain(int argc, WCHAR* argv[])
 	//window = glfwCreateWindow(1920, 1080, "Deformable Display", NULL, NULL);
 	//window = glfwCreateWindow(1280, 720, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
 	//window = glfwCreateWindow(1920, 1080, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
+	
 	window = glfwCreateWindow(1919, 1079, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
+	
 	//glfwSetWindowSize(window, 1920, 1080);
 	if (!window)
 	{
@@ -149,7 +151,7 @@ int wmain(int argc, WCHAR* argv[])
 	glEnable(GL_PERSPECTIVE_CORRECTION_HINT);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);*/
 	scene = new PointCloudPTMScene();
-
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	scene->initScene(window);
 	int nFrames = 10;
 	/* Loop until the user closes the window */

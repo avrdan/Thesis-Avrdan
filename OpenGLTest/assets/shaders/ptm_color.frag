@@ -28,7 +28,29 @@ void main (void)
 		// CLAMP PROJECTIVE TEXTURE (for some reason gl_clamp did not work...)
 		if(projCoords.s > 0 && projCoords.t > 0 && finalCoords.s < 1 && finalCoords.t < 1)
 		{
-			if(debug && depth < 1)
+			// FOR VAL 1
+			if(debug && depth < 19)
+			{
+				if(depth > 18.9)
+				{
+					//outputColor = blue;
+					outputColor = vProjTexColor;
+				}
+				else if(depth > 18.8)
+				{
+					// ADD DEPTH DEBUG
+					//outputColor = magenta;
+					outputColor = vProjTexColor;
+				}
+				else outputColor = red;
+			}
+			else if(debug && depth > 19.1)
+			{
+				// ADD DEPTH DEBUG
+				outputColor = green;
+			}
+			else outputColor = vProjTexColor;
+			/*if(debug && depth < 1)
 			{
 				if(depth > 0.9)
 					outputColor = blue;
@@ -42,7 +64,7 @@ void main (void)
 				// ADD DEPTH DEBUG
 				outputColor = green;
 			}
-			else outputColor = vProjTexColor;
+			else outputColor = vProjTexColor;*/
 		}
 		else
 			outputColor = vColor;
