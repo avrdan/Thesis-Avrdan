@@ -1081,7 +1081,9 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			glUniformMatrix4fv(iInvViewMatrix, 1, GL_FALSE, glm::value_ptr(invViewMatrix));
 			glUniform1i(iSamplerPTMLoc, 0);
 			glUniform1i(iProjSamplerLoc, 1);
-			glUniform4fv(iColorLoc, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+			//glUniform4fv(iColorLoc, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+			//black
+			glUniform4fv(iColorLoc, 1, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
 			
 			// update debug state
 			glUniform1i(iDebugLoc, bFragmentShaderDebug);
@@ -1401,7 +1403,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 					initDepth = depth;
 				}
 
-				if (activeTextureIndex < 15 + 98)
+				if (activeTextureIndex < 16 + 98)
 					activeTextureIndex++;
 			}
 			else if (depthDiff < -volumeSliceStep)
@@ -1410,7 +1412,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				{
 					initDepth = depth;
 				}
-				if (activeTextureIndex > 15)
+				if (activeTextureIndex > 16)
 					activeTextureIndex--;
 			}
 		}
