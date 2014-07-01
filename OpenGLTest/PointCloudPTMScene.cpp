@@ -261,6 +261,15 @@ PointCloudPTMScene::PointCloudPTMScene()
 	xTranslationPrjTotal = 0;
 	yTranslationPrjTotal = 0;
 	zTranslationPrjTotal = 0;
+	xRotationPrj = 0;
+	yRotationPrj = 0;
+	zRotationPrj = 0;
+	xRotationPrjTotal = 0;
+	yRotationPrjTotal = 0;
+	zRotationPrjTotal = 0;
+	xTranslationPrj = 0;
+	yTranslationPrj = 0;
+	zTranslationPrj = 0;
 
 	activeTextureIndex = 5;
 	nFrames = 10;
@@ -330,8 +339,11 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 
 	//projectorP = glm::perspective(30.5f, aspect, pNear, pFar);
 	//projectorP = glm::perspective(-10.0f, aspect, pNear, pFar);
+
+	//projectorP = glm::perspective(11.25f, aspect, pNear, pFar);
+	//projectorP = glm::perspective(11.4f, aspect, pNear, pFar);
 	projectorP = glm::perspective(11.4f, aspect, pNear, pFar);
-	
+
 	/*projectorP = glm::mat4(-2.86342, -0, -0, -0,
 		0, 5.2496, 0, 0,
 		0, 0, -1.0002, -1,
@@ -579,14 +591,24 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 							0, 4.92136, 0, 0,
 							0, 0, -1.0002, -1,
 							0, 0, -0.20002, 0);*/
-						frustum = glm::mat4(46.3599, 0, 0, 0,
-							0, 81.5006, 0, 0,
+						/*frustum = glm::mat4(46.755, 0, 0, 0,
+							0, 82.195, 0, 0,
+							0, 0, -1.00002, -1,
+							0, 0, -0.0200002, 0);*/
+						frustum = glm::mat4(2.1589, 0, 0, 0,
+							0, 3.79533, 0, 0,
 							0, 0, -1.00002, -1,
 							0, 0, -0.0200002, 0);
 
+
+						//pFovY = 1.39407f;
+						pFovY = 29.5218f;
+
+						//frustum = glm::scale(frustum, glm::vec3(-1, -1, 1));
 						//Y translation : 0.0254552
 						//yTranslation = 0.0254552f;
-						yTranslation = 0.0193368f;
+						
+						//yTranslation = 0.0193368f;
 
 						bInitFrustum = false;
 					}
@@ -787,11 +809,88 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 						Y rotation: 0
 						Z rotation: 0
 						--===========================================--
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						46.755, 0, 0, 0
+						0, 82.195, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00284801, 0.0184056, -18.2686, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00284801, 0.0184056, -18.2686, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: 0
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV1.39407
+						--===========================================--
+
+						CAMERA VERY CLOSE TO MESH (THIS MAKES THE DISTORTION APPEAR MORE CLEARLY)
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.1589, 0, 0, 0
+						0, 3.79533, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, -0, -0.999999, -0
+						0.00520709, 0.00186245, -0.210023, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00520709, 0.00186245, -0.210023, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: 0
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV29.5218
+						--===========================================--
 					*/
+					/*mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
+						0, 1, 0, 0,
+						- 0.00159255, 0, -0.999999, 0,
+						0.00284801, 0.0184056, -18.2686, 1);*/
 					mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
 						0, 1, 0, 0,
 						- 0.00159255, -0, -0.999999, -0,
-						0.00284801, 0.0184056, -18.2686, 1);
+						0.00520709, 0.00186245, -0.210023, 1);
 
 					
 					projectorV = glm::translate(projectorV, glm::vec3(0, yTranslation, 0));
@@ -844,7 +943,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	
 		// apply translation to rotated camera
 		translationMatrix = glm::mat4(1.0f);
-		translationMatrix = glm::translate(translationMatrix, glm::vec3(xTranslationCam, 0.0f, zTranslationCam));
+		translationMatrix = glm::translate(translationMatrix, glm::vec3(xTranslationCam, yTranslationCam, zTranslationCam));
 
 		// apply translation to rotation
 		// apply model view to rotated and translated camera
@@ -859,17 +958,27 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		//mCurrent = glm::rotate(mCurrent, 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
 		
 		//mCurrent = glm::rotate(mCurrent, -180.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-		
+		mCurrent = glm::translate(mCurrent, glm::vec3(xTranslation, yTranslation, zTranslation));
+
+
 		// also allow rotation
 		mCurrent = glm::rotate(mCurrent, xRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 		mCurrent = glm::rotate(mCurrent, yRotation, glm::vec3(0.0f, 1.0f, 0.0f));
 		mCurrent = glm::rotate(mCurrent, zRotation, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		//mCurrent = glm::translate(mCurrent, glm::vec3(xTranslation, yTranslation, zTranslation));
-		projectorV = glm::translate(projectorV, glm::vec3(xTranslation, yTranslation, zTranslation));
-		xTranslation = 0;
-		yTranslation = 0;
-		zTranslation = 0;
+		projectorV = glm::translate(projectorV, glm::vec3(xTranslationPrj, yTranslationPrj, zTranslationPrj));
+		xTranslationPrj = 0;
+		yTranslationPrj = 0;
+		zTranslationPrj = 0;
+
+		projectorV   = glm::rotate(projectorV, xRotationPrj, glm::vec3(1.0f, 0.0f, 0.0f));
+		projectorV   = glm::rotate(projectorV, yRotationPrj, glm::vec3(0.0f, 1.0f, 0.0f));
+		projectorV   = glm::rotate(projectorV, zRotationPrj, glm::vec3(0.0f, 0.0f, 1.0f));
+		xRotationPrj = 0;
+		yRotationPrj = 0;
+		zRotationPrj = 0;
+
 		//mCurrent = glm::rotate(mCurrent, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		//mCurrent = glm::scale(mCurrent, glm::vec3(10.0f, 10.0f, 10.0f));
 
@@ -1257,7 +1366,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 					initDepth = depth;
 				}
 
-				if (activeTextureIndex < 15 + 98)
+				if (activeTextureIndex < 16 + 98)
 					activeTextureIndex++;
 			}
 			else if (depthDiff < -volumeSliceStep*1000)
@@ -1266,7 +1375,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				{
 					initDepth = depth;
 				}
-				if (activeTextureIndex > 15)
+				if (activeTextureIndex > 16)
 					activeTextureIndex--;
 			}
 		}
@@ -1357,6 +1466,12 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			yRotation = 0;
 			zRotation = 0;
 
+			xTranslationPrj = 0;
+			yTranslationPrj = 0;
+			zTranslationPrj = 0;
+			xRotationPrj = 0;
+			yRotationPrj = 0;
+			zRotationPrj = 0;
 
 			bInitFrustum = true;
 			timer = 0;
@@ -1413,12 +1528,21 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			printGLMMatrix(mCurrent, "THE CURRENT MATRIX (TRANSFORMED MV)");
 			cout << endl;
 			cout << "PROJECTOR T + R:" << endl;
-			cout << "X translation: " << xTranslationPrjTotal << endl;
-			cout << "Y translation: " << yTranslationPrjTotal << endl;
-			cout << "Z translation: " << zTranslationPrjTotal << endl;
+			cout << "X translation PROJ: " << xTranslationPrjTotal << endl;
+			cout << "Y translation PROJ: " << yTranslationPrjTotal << endl;
+			cout << "Z translation PROJ: " << zTranslationPrjTotal << endl;
+			cout << "X rotation PROJ: " << xRotationPrjTotal << endl;
+			cout << "Y rotation PROJ: " << yRotationPrjTotal << endl;
+			cout << "Z rotation PROJ: " << zRotationPrjTotal << endl;
 			cout << "X rotation: " << xRotation << endl;
 			cout << "Y rotation: " << yRotation << endl;
 			cout << "Z rotation: " << zRotation << endl;
+			cout << "X translation: " << xTranslation << endl;
+			cout << "Y translation: " << yTranslation << endl;
+			cout << "Z translation: " << zTranslation << endl;
+
+			cout << endl;
+			cout << "FOV" << pFovY << endl;
 			cout << "--===========================================--" << endl << endl;
 			timer = 0;
 		}
@@ -1437,7 +1561,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			if (runVolumeSlicing || runGoogleMap || runDeformScene)
 			{
 				if (runVolumeSlicing)
-					activeTextureIndex = 49 + 16;
+					activeTextureIndex = 49 + 17;
 				if (runGoogleMap)
 					activeTextureIndex = 12;
 				if (runDeformScene)
@@ -1518,100 +1642,141 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		if (glfwGetKey(window, GLFW_KEY_INSERT) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_INSERT) != GLFW_RELEASE)
 		{
 			//	zRotation += 3.14f / 180 * getDeltaTime();
-			zTranslation += getDeltaTime() / 10;
-			zTranslationPrjTotal += zTranslation;
+			zTranslationPrj += getDeltaTime() / 10;
+			zTranslationPrjTotal += zTranslationPrj;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_DELETE) != GLFW_RELEASE)
 		{
 			//	zRotation -= 3.14f / 180 * getDeltaTime();
-			zTranslation -= getDeltaTime() / 10;
-			zTranslationPrjTotal += zTranslation;
+			zTranslationPrj -= getDeltaTime() / 10;
+			zTranslationPrjTotal += zTranslationPrj;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_PAGE_UP) != GLFW_RELEASE)
 		{
 			//	zRotation += 3.14f / 180 * getDeltaTime();
-			yTranslation += getDeltaTime()/10;
-			yTranslationPrjTotal += yTranslation;
+			yTranslationPrj += getDeltaTime() / 10;
+			yTranslationPrjTotal += yTranslationPrj;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_PAGE_DOWN) != GLFW_RELEASE)
 		{
 			//	zRotation -= 3.14f / 180 * getDeltaTime();
-			yTranslation -= getDeltaTime() / 10;
-			yTranslationPrjTotal += yTranslation;
+			yTranslationPrj -= getDeltaTime() / 10;
+			yTranslationPrjTotal += yTranslationPrj;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_HOME) != GLFW_RELEASE)
 		{
 		//	zRotation += 3.14f / 180 * getDeltaTime();
-			xTranslation -= getDeltaTime() / 10;
-			xTranslationPrjTotal += xTranslation;
+			xTranslationPrj -= getDeltaTime() / 10;
+			xTranslationPrjTotal += xTranslationPrj;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_END) != GLFW_RELEASE)
 		{
 		//	zRotation -= 3.14f / 180 * getDeltaTime();
-			xTranslation += getDeltaTime() / 10;
-			xTranslationPrjTotal += xTranslation;
+			xTranslationPrj += getDeltaTime() / 10;
+			xTranslationPrjTotal += xTranslationPrj;
 		}
 
 		// Rotate X
 		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 		{
 
-			xRotationCam += 10 * getDeltaTime();
+			xRotationCam += getDeltaTime();
 		}
 
 
 		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
 		{
-			xRotationCam -= 10 * getDeltaTime();
+			xRotationCam -= getDeltaTime();
 		}
 
 		// Rotate Y
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
 		{
 
-			yRotationCam += 10 * getDeltaTime();
+			yRotationCam += getDeltaTime();
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
 		{
-			yRotationCam -= 10 * getDeltaTime();
+			yRotationCam -= getDeltaTime();
 		}
 
 		// Rotate Z
 		if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
 		{
 
-			zRotationCam += 10 * getDeltaTime();
+			zRotationCam += getDeltaTime();
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
 		{
-			zRotationCam -= 10 * getDeltaTime();
+			zRotationCam -= getDeltaTime();
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
-			zTranslationCam += getDeltaTime();
+			zTranslationCam += getDeltaTime() / 10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
-			zTranslationCam -= getDeltaTime();
+			zTranslationCam -= getDeltaTime() / 10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
-			xTranslationCam += getDeltaTime();
+			xTranslationCam += getDeltaTime() / 10;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
-			xTranslationCam -= getDeltaTime();
+			xTranslationCam -= getDeltaTime() / 10;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
+		{
+			yTranslationCam += getDeltaTime() / 10;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
+		{
+			yTranslationCam -= getDeltaTime() / 10;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
+		{
+			
+			zTranslation += getDeltaTime() / 100;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
+		{
+			zTranslation -= getDeltaTime() / 100;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
+		{
+			xTranslation += getDeltaTime() / 100;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
+		{
+			xTranslation -= getDeltaTime() / 100;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
+		{
+			yTranslation += getDeltaTime() / 100;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_KP_3) == GLFW_PRESS)
+		{
+			yTranslation -= getDeltaTime() / 100;
 		}
 
 
@@ -1664,38 +1829,68 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		// NEED 6 KEYS
 		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_C) != GLFW_RELEASE)
 		{
-			xRotation += 3.14f / 180 * getDeltaTime();
+			xRotation += 3.14f / 180 * getDeltaTime() * 1000;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_Z) != GLFW_RELEASE)
 		{
-			xRotation -= 3.14f / 180 * getDeltaTime();
+			xRotation -= 3.14f / 180 * getDeltaTime() * 1000;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_B) != GLFW_RELEASE)
 		{
-			yRotation += 3.14f / 180 * getDeltaTime();
+			yRotation += 3.14f / 180 * getDeltaTime() * 1000;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_N) != GLFW_RELEASE)
 		{
-			yRotation -= 3.14f / 180 * getDeltaTime();
+			yRotation -= 3.14f / 180 * getDeltaTime() * 1000;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_COMMA) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_COMMA) != GLFW_RELEASE)
 		{
-			zRotation += 3.14f / 180 * getDeltaTime();
+			zRotation += 3.14f / 180 * getDeltaTime() * 1000;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_PERIOD) != GLFW_RELEASE)
 		{
-			zRotation -= 3.14f / 180 * getDeltaTime();
+			zRotation -= 3.14f / 180 * getDeltaTime() * 1000;
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_L) != GLFW_RELEASE)
+		if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F7) != GLFW_RELEASE)
 		{
-			float depth = getGLDepth(1920 / 2, 1080 / 2, mModelView, frustum);
-			cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
+			xRotationPrj		  -= 3.14f / 180 * getDeltaTime() * 1000;
+			xRotationPrjTotal += xRotationPrj;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_F8) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F8) != GLFW_RELEASE)
+		{
+			xRotationPrj += 3.14f / 180 * getDeltaTime() * 1000;
+			xRotationPrjTotal += xRotationPrj;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F9) != GLFW_RELEASE)
+		{
+			yRotationPrj -= 3.14f / 180 * getDeltaTime() * 1000;
+			yRotationPrjTotal += yRotationPrj;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F10) != GLFW_RELEASE)
+		{
+			yRotationPrj += 3.14f / 180 * getDeltaTime() * 1000;
+			yRotationPrjTotal += yRotationPrj;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F11) != GLFW_RELEASE)
+		{
+			zRotationPrj -= 3.14f / 180 * getDeltaTime() * 1000;
+			zRotationPrjTotal += zRotationPrj;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F6) != GLFW_RELEASE)
+		{
+			zRotationPrj += 3.14f / 180 * getDeltaTime() * 1000;
+			zRotationPrjTotal += zRotationPrj;
 		}
 
 		if (timer >= 0.25f)

@@ -29,14 +29,14 @@ void main (void)
 		if(projCoords.s > 0 && projCoords.t > 0 && finalCoords.s < 1 && finalCoords.t < 1)
 		{
 			// FOR VAL 1
-			if(debug && depth < 19)
+			if(debug && depth < 0.9)
 			{
-				if(depth > 18.9)
+				if(depth > 0.89)
 				{
 					//outputColor = blue;
 					outputColor = vProjTexColor;
 				}
-				else if(depth > 18.8)
+				else if(depth > 0.88)
 				{
 					// ADD DEPTH DEBUG
 					//outputColor = magenta;
@@ -44,7 +44,7 @@ void main (void)
 				}
 				else outputColor = red;
 			}
-			else if(debug && depth > 19.1)
+			else if(debug && depth > 0.91)
 			{
 				// ADD DEPTH DEBUG
 				outputColor = green;

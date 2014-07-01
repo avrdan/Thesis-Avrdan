@@ -130,6 +130,10 @@ private:
 	float zTranslationCam, yTranslationCam, xTranslationCam;
 	float zTranslation, yTranslation, xTranslation;
 	float zTranslationPrjTotal, yTranslationPrjTotal, xTranslationPrjTotal;
+	float xRotationPrjTotal, yRotationPrjTotal, zRotationPrjTotal;
+	float zRotationPrj, yRotationPrj, xRotationPrj;
+	float zTranslationPrj, yTranslationPrj, xTranslationPrj;
+
 	glm::mat4 rotationMatrix;
 	glm::mat4 translationMatrix;
 
