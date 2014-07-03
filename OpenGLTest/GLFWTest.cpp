@@ -86,7 +86,8 @@ int wmain(int argc, WCHAR* argv[])
 	//window = glfwCreateWindow(1280, 720, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
 	//window = glfwCreateWindow(1920, 1080, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
 	
-	window = glfwCreateWindow(1919, 1079, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
+	//window = glfwCreateWindow(1919, 1079, "Deformable Display", glfwGetPrimaryMonitor(), NULL);
+	window = glfwCreateWindow(1919, 1079, "Deformable Display", NULL, NULL);
 	
 	//glfwSetWindowSize(window, 1920, 1080);
 	if (!window)

@@ -194,7 +194,7 @@ void loadAllTextures(vector<string> sTextureNames)
 			continue;
 		}
 
-		cout << "Loaded Texture " << sTextureNames[i] << endl;
+		//cout << "Loaded Texture " << sTextureNames[i] << endl;
 
 		tex->setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
 		tTextures.push_back(*tex);

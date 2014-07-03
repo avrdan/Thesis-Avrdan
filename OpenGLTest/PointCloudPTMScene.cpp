@@ -1,5 +1,6 @@
 #include "PointCloudPTMScene.h"
 #include "static_geometry.h"
+#include <fstream>
 
 PointCloudPTMScene::PointCloudPTMScene()
 {
@@ -296,6 +297,12 @@ PointCloudPTMScene::PointCloudPTMScene()
 	runGoogleMap     = 0;
 	runDeformScene   = false;
 	runDeformText    = false;
+	runDeformGrid = false;
+	saveMesh = false;
+
+	s1Counter = 0;
+	s2Counter = 0;
+	s3Counter = 0;
 }
 
 
@@ -442,6 +449,7 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 
 	//char **cVolumeSliceNames = new  char*[100];
 	const char *cVolumeSliceNames[99];
+	const char *cVolumeSliceNames2[99];
 	string *s;
 	char numstr[21]; // enough to hold all numbers up to 64-bits
 	for (int i = 0; i < 99; i++)
@@ -449,33 +457,61 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 		if (i < 10)
 		{
 			
-			s = new string("brain/brain_00" + string(_itoa(i, numstr, 10)) + ".jpg");
-			//s.append(to_string(i));
-			cout << s->c_str() << endl;
-			//cVolumeSliceNames[i] = "brain/brain_00" + i;
-			//cVolumeSliceNames[i] = s.c_str();
-			
-			//cVolumeSliceNames[i] = string("brain/brain_00" + string(_itoa(i, numstr, 10)) + '\0').c_str();
-			//cVolumeSliceNames[i] = string("brain/brain_00" + string(_itoa(i, numstr, 10)) + '\0').c_str();
+			s = new string("Scenario5/brain_00" + string(_itoa(i, numstr, 10)) + ".jpg");
 			cVolumeSliceNames[i] = s->c_str();
-
-			//strcpy(cVolumeSliceNames[i], s.c_str());
-			//cVolumeSliceNames[i] = malloc(15);
-			//memcpy(cVolumeSliceNames[i], s.c_str(), strlen(s.c_str()) + 1);
 		}
 		else
 		{
-			s = new string("brain/brain_0" + string(_itoa(i, numstr, 10)) + ".jpg");
+			s = new string("Scenario5/brain_0" + string(_itoa(i, numstr, 10)) + ".jpg");
 			//strcpy(cVolumeSliceNames[i], s.c_str());
 			cVolumeSliceNames[i] = s->c_str();
 			//cVolumeSliceNames[i] = "brain/brain_0" + i;
 		}		
 	}
 
+	for (int i = 0; i < 99; i++)
+	{
+		if (i < 10)
+		{
+
+			s = new string("Scenario5/inverted/brain_inv_00" + string(_itoa(i, numstr, 10)) + ".jpg");
+			cVolumeSliceNames2[i] = s->c_str();
+		}
+		else
+		{
+			s = new string("Scenario5/inverted/brain_inv_0" + string(_itoa(i, numstr, 10)) + ".jpg");
+			//strcpy(cVolumeSliceNames[i], s.c_str());
+			cVolumeSliceNames2[i] = s->c_str();
+			//cVolumeSliceNames[i] = "brain/brain_0" + i;
+		}
+	}
+
+	const char *s1TextureNames[] = { "Scenario1/grid_hd_A.jpg", "Scenario1/grid_hd_B.jpg", 
+		"Scenario1/grid_hd_centerPoint.jpg", "Scenario1/grid_hd_leftPoint.jpg", "Scenario1/grid_hd_lowerPoint.jpg", 
+		"Scenario1/grid_hd_rightPoint.jpg", "Scenario1/grid_hd_upperPoint.jpg"};
+	const char *s2TextureNames[] = { "Scenario2/random-text-2048x2048.jpg", "Scenario2/random-text-2048x2048_B.jpg", 
+		"Scenario2/random-text-2048x2048_centralPoint.jpg", "Scenario2/random-text-2048x2048_B._upperPoint.jpg",
+		"Scenario2/random-text-2048x2048_rightPoint.jpg", "Scenario2/random-text-2048x2048_B_lowerLeftPoint.jpg"};
+	const char *s3TextureNames[] = { "Scenario3/3D_Scene_011.jpg", "Scenario3/3D_Scene_011_B.jpg", "Scenario3/3D_Scene_011_B_left1.jpg", "Scenario3/3D_Scene_011_right1.jpg",
+		"Scenario3/3D_Scene_011_B_centralPoint.jpg", "Scenario3/3D_Scene_011_left2.jpg", "Scenario3/3D_Scene_011_B_right2.jpg"};
+	const char *s4TextureNames[] = { "Scenario4/NYMidZoomA.jpg", "Scenario4/NYMidZoomB.jpg" };
 	
 	vector<string> sTextureNames(cTextureNames, &cTextureNames[sizeof(cTextureNames) / sizeof(cTextureNames[0])]);
-	vector<string> sVolumeSliceTextureNames(cVolumeSliceNames, &cVolumeSliceNames[sizeof(cVolumeSliceNames) / sizeof(cVolumeSliceNames[0])]);
+
+	s1TextureNamesStr = vector<string>(s1TextureNames, &s1TextureNames[sizeof(s1TextureNames) / sizeof(s1TextureNames[0])]);
+	s2TextureNamesStr = vector<string>(s2TextureNames, &s2TextureNames[sizeof(s2TextureNames) / sizeof(s2TextureNames[0])]);
+	s3TextureNamesStr = vector<string>(s3TextureNames, &s3TextureNames[sizeof(s3TextureNames) / sizeof(s3TextureNames[0])]);
+	s4TextureNamesStr = vector<string>(s4TextureNames, &s4TextureNames[sizeof(s4TextureNames) / sizeof(s4TextureNames[0])]);
+
+	sVolumeSliceTextureNames  = vector<string>(cVolumeSliceNames, &cVolumeSliceNames[sizeof(cVolumeSliceNames) / sizeof(cVolumeSliceNames[0])]);
+	sVolumeSliceTextureNames2 =vector<string>(cVolumeSliceNames2, &cVolumeSliceNames2[sizeof(cVolumeSliceNames2) / sizeof(cVolumeSliceNames2[0])]);
+	
+	sTextureNames.insert(sTextureNames.end(), s1TextureNamesStr.begin(), s1TextureNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s2TextureNamesStr.begin(), s2TextureNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s3TextureNamesStr.begin(), s3TextureNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s4TextureNamesStr.begin(), s4TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), sVolumeSliceTextureNames.begin(), sVolumeSliceTextureNames.end());
+	sTextureNames.insert(sTextureNames.end(), sVolumeSliceTextureNames2.begin(), sVolumeSliceTextureNames2.end());
 	loadAllTextures(sTextureNames);
 	//loadAllTextures(sVolumeSliceTextureNames);
 
@@ -544,12 +580,21 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	}
 	else
 	{
-		
+		if (saveMesh)
+		{
+			storedPos.clear();
+			storedPos.resize(rdp->worldPos.size());
+			storedPos = vector<PXCPoint3DF32>(rdp->worldPos);
+		}
+
 		vboSceneObjects.bindVBO();
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PXCPoint3DF32), 0);
 		//glBindVertexArray(uiVAOSceneObjects);
 		vboSceneObjects.addData(rdp->worldPos.data(), rdp->nPoints * sizeof(PXCPoint3DF32));
+
+		
+		
 		vboSceneObjects.uploadDataToGPU(GL_STREAM_DRAW);
 
 		if (bUseMainCam)
@@ -1135,7 +1180,11 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	// RUN TASKS HERE
 	if (runDeformText)
 	{
-		float depthDiff;
+
+		// only change bDebugTexture state depending on the current texture
+		
+
+	/*	float depthDiff;
 		if (bDebugTexture)
 		{
 			// fails...problem, don't know how many points actually made it to array
@@ -1264,7 +1313,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				if (activeTextureIndex == 3)
 					activeTextureIndex = 14;
 			}
-		}
+		}*/
 	}
 	
 	if (runGoogleMap)
@@ -1293,18 +1342,21 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			//cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
 			depthDiff = initDepth - depth;
 
+			if(activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size())
+				activeTextureIndex++;
+
 			// convert the step to metric space(the point was not converted initially)
-			if (depthDiff > volumeSliceStep * 1000)
+			/*if (depthDiff > volumeSliceStep * 1000)
 			{
 
-				if (activeTextureIndex == 12)
+				if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size())
 					activeTextureIndex++;
 			}
 			else if (depthDiff < -volumeSliceStep * 1000)
 			{
-				if (activeTextureIndex == 13)
+				if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size() + 1)
 					activeTextureIndex--;
-			}
+			}*/
 		}
 		else
 		{
@@ -1321,7 +1373,9 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			//cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
 			depthDiff = initDepth - depth;
 
-			if (depthDiff > volumeSliceStep)
+			if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size() + 1)
+				activeTextureIndex--;
+			/*if (depthDiff > volumeSliceStep)
 			{
 				if (activeTextureIndex == 12)
 					activeTextureIndex++;
@@ -1330,7 +1384,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			{
 				if (activeTextureIndex == 13)
 					activeTextureIndex--;
-			}
+			}*/
 		}
 	}
 
@@ -1339,6 +1393,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		float depthDiff;
 		if (bDebugTexture)
 		{
+			
 			// fails...problem, don't know how many points actually made it to array
 			// cannot properly get map from center
 			//float wpd = rdp->worldPos.at(320 * 320/2 + 240/2).z;
@@ -1350,6 +1405,10 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			if (initDepthState)
 			{
+				activeTextureIndex += sVolumeSliceTextureNames.size();
+				/*activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size() / 2;*/
+
 				initDepth = wpd;
 				initDepthState = false;
 
@@ -1368,7 +1427,8 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 					initDepth = depth;
 				}
 
-				if (activeTextureIndex < 16 + 98)
+				if (activeTextureIndex < 15 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size())
 					activeTextureIndex++;
 			}
 			else if (depthDiff < -volumeSliceStep*1000)
@@ -1377,7 +1437,8 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				{
 					initDepth = depth;
 				}
-				if (activeTextureIndex > 16)
+				if (activeTextureIndex > 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size())
 					activeTextureIndex--;
 			}
 		}
@@ -1386,6 +1447,10 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			// normal mesh projection
 			if (initDepthState)
 			{
+				activeTextureIndex -= sVolumeSliceTextureNames2.size();
+				//activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+				//	+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() / 2;
+
 				initDepth = getGLDepth(1920 / 2, 1080 / 2, mModelView, frustum);
 				initDepthState = false;
 
@@ -1403,7 +1468,8 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 					initDepth = depth;
 				}
 
-				if (activeTextureIndex < 16 + 98)
+				if (activeTextureIndex < 15 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size())
 					activeTextureIndex++;
 			}
 			else if (depthDiff < -volumeSliceStep)
@@ -1412,11 +1478,48 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				{
 					initDepth = depth;
 				}
-				if (activeTextureIndex > 16)
+				if (activeTextureIndex > 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+					+ s4TextureNamesStr.size())
 					activeTextureIndex--;
 			}
 		}
 		
+	}
+
+	if (saveMesh)
+	{
+		//write the current frame's mesh to file!
+		outputMesh.open("mesh.obj");
+		PXCPoint3DF32 *pos = rdp->worldPos.data();
+		outputMesh << "# VERTICES" << endl;
+		for (int i = 0; i < rdp->worldPos.capacity(); i++)
+		{
+			if (pos[i].x > -10000 && pos[i].x < 10000 && pos[i].z > -10000 && pos[i].z < 10000 && pos[i].y > -10000 && pos[i].y < 10000)
+				outputMesh << "v " << pos[i].x << " " << pos[i].y << " " << pos[i].z << "\n";
+		}
+
+		//outputMesh << endl;
+
+		outputMesh << "# FACES" << endl;
+		for (int i = 0; i < rdp->indices.size() - 2; i++)
+		{
+			if ((pos[rdp->indices[i]].x > -10000 && pos[rdp->indices[i]].x < 10000 &&
+				pos[rdp->indices[i]].z > -10000 && pos[rdp->indices[i]].z < 10000 && pos[rdp->indices[i]].y > -10000 && pos[rdp->indices[i]].y < 10000)
+				&&
+				(pos[rdp->indices[i + 1]].x > -10000 && pos[rdp->indices[i + 1]].x < 10000 &&
+				pos[rdp->indices[i + 1]].z > -10000 && pos[rdp->indices[i + 1]].z < 10000 && pos[rdp->indices[i + 1]].y > -10000 && pos[rdp->indices[i + 1]].y < 10000)
+				&&
+				(pos[rdp->indices[i + 2]].x > -10000 && pos[rdp->indices[i + 2]].x < 10000 &&
+				pos[rdp->indices[i + 2]].z > -10000 && pos[rdp->indices[i + 2]].z < 10000 && pos[rdp->indices[i + 2]].y > -10000 && pos[rdp->indices[i + 2]].y < 10000))
+			{
+				// faces start at 1 in .obj files, so we need to add 1 to all indices
+				outputMesh << "f " << (rdp->indices[i] + 1) << " " << (rdp->indices[i + 1] + 1) << " " << (rdp->indices[i + 2] + 1) << "\n";
+			}		
+		}
+
+		outputMesh.close();
+
+		saveMesh = false;
 	}
 
 	// user interaction
@@ -1560,14 +1663,43 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			savedP  = frustum;
 
 			// RESET STATES
-			if (runVolumeSlicing || runGoogleMap || runDeformScene)
+			if (runVolumeSlicing || runGoogleMap || runDeformScene || runDeformText || runDeformGrid)
 			{
 				if (runVolumeSlicing)
-					activeTextureIndex = 49 + 17;
-				if (runGoogleMap)
-					activeTextureIndex = 12;
+				{
+
+				}
+					//activeTextureIndex = 49 + 17;
+				//if (runGoogleMap)
+				//	activeTextureIndex = 12;
+				if (runDeformText)
+				{
+					if (activeTextureIndex == 16 + s1TextureNamesStr.size())
+						activeTextureIndex++;
+					else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + 1)
+					{
+						activeTextureIndex--;
+					}
+				}
 				if (runDeformScene)
-					activeTextureIndex = 14;
+				{
+					if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size())
+						activeTextureIndex++;
+					else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1)
+					{
+						activeTextureIndex--;
+					}
+				}
+				if (runDeformGrid)
+				{
+					if (activeTextureIndex == 16)
+						activeTextureIndex++;
+					else if (activeTextureIndex == 16 + 1)
+					{
+						activeTextureIndex--;
+					}
+				}
+			
 				initDepthState = true;
 				initDepth = 0;
 			}
@@ -1581,10 +1713,169 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 	if (timer >= 0.25f)
 	{
+		if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_9) != GLFW_RELEASE)
+		{
+			if (runDeformText)
+			{
+				if(activeTextureIndex == 16 + s1TextureNamesStr.size() + 3)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
+				}
+				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + 4)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size();
+				}
+				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + 5)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
+				}
+				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + 2)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size();
+				}
+			}
+			else if (runDeformScene)
+			{
+
+				if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 3)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
+				}
+				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 4)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
+				}
+				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 5)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
+				}
+				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 6)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
+				}
+				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 2)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
+				}
+			}
+			else if (runDeformGrid)
+			{
+
+				if (activeTextureIndex == 16 + 3)
+				{
+					activeTextureIndex = 16 + 1;
+				}
+				else if (activeTextureIndex == 16 + 4)
+				{
+					activeTextureIndex = 16;
+				}
+				else if (activeTextureIndex == 16 + 5)
+				{
+					activeTextureIndex = 16 + 1;
+				}
+				else if (activeTextureIndex == 16 + 6)
+				{
+					activeTextureIndex = 16;
+				}
+				else if (activeTextureIndex == 16 + 2)
+				{
+					activeTextureIndex = 16;
+				}
+			}
+			//bool sml = isStartMouseLook();
+			//setStartMouseLook(!sml);
+			timer = 0;
+		}
+	}
+
+	if (timer >= 0.25f)
+	{
 		if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_0) != GLFW_RELEASE)
 		{
-			bool sml = isStartMouseLook();
-			setStartMouseLook(!sml);
+			if (runDeformText)
+			{
+
+				if (s2Counter == 0)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 3;
+					s2Counter++;
+				}
+				else if (s2Counter == 1)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 4;
+					s2Counter++;
+				}
+				else if (s2Counter == 2)
+				{
+					activeTextureIndex =  16 + s1TextureNamesStr.size() + 5;
+					s2Counter++;
+				}
+				else if (s2Counter == 3)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 2;
+					s2Counter = 0;
+				}
+			}
+			else if (runDeformScene)
+			{
+
+				if (s3Counter == 0)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 3;
+					s3Counter++;
+				}
+				else if (s3Counter == 1)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 4;
+					s3Counter++;
+				}
+				else if (s3Counter == 2)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 5;
+					s3Counter++;
+				}
+				else if (s3Counter == 3)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 6;
+					s3Counter++;
+				}
+				else if (s3Counter == 4)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 2;
+					s3Counter = 0;
+				}
+			}
+			else if (runDeformGrid)
+			{
+
+				if (s1Counter == 0)
+				{
+					activeTextureIndex = 16 + 3;
+					s1Counter++;
+				}
+				else if (s1Counter == 1)
+				{
+					activeTextureIndex = 16 + 4;
+					s1Counter++;
+				}
+				else if (s1Counter == 2)
+				{
+					activeTextureIndex = 16 + 5;
+					s1Counter++;
+				}
+				else if (s1Counter == 3)
+				{
+					activeTextureIndex = 16 + 6;
+					s1Counter++;
+				}
+				else if (s1Counter == 4)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 2;
+					s1Counter = 0;
+				}
+			}
+			//bool sml = isStartMouseLook();
+			//setStartMouseLook(!sml);
 			timer = 0;
 		}
 	}
@@ -1906,6 +2197,16 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			}
 		}
 
+		if (timer >= 0.25f)
+		{
+			if (glfwGetKey(window, GLFW_KEY_SLASH) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_SLASH) != GLFW_RELEASE)
+			{
+				saveMesh = true;
+				
+				timer = 0;
+			}
+		}
+
 		// TASK 1
 		if (timer >= 0.25f)
 		{
@@ -1917,12 +2218,17 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				runGoogleMap = false;
 				runVolumeSlicing = false;
 				runDeformScene = false;
+				runDeformText = false;
 
 				//init
-				activeTextureIndex = 15;
+				activeTextureIndex = 16 + 2;
 				initDepthState = true;
 				initDepth = 0;
-				runDeformText = true;
+				s1Counter = 0;
+				s2Counter = 0;
+				s3Counter = 0;
+
+				runDeformGrid = true;
 
 				timer = 0;
 			}
@@ -1938,13 +2244,17 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				// make sure we do not run other states
 				runGoogleMap = false;
 				runVolumeSlicing = false;
-				runDeformText = false;
-
+				runDeformText = true;
+				runDeformScene = false;
+				runDeformGrid = false;
 				//init
-				activeTextureIndex = 14;
+				// jump to central point
+				activeTextureIndex = 16 + s1TextureNamesStr.size() + 2;
 				initDepthState = true;
 				initDepth = 0;
-				runDeformScene = true;
+				s1Counter = 0;
+				s2Counter = 0;
+				s3Counter = 0;
 
 				timer = 0;
 			}
@@ -1958,15 +2268,19 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			{
 				randomizeDistortionState(100);
 				// make sure we do not run other states
-				runDeformScene = false;
+				runDeformScene = true;
 				runVolumeSlicing = false;
 				runDeformText = false;
-
+				runGoogleMap = false;
+				runDeformGrid = false;
+				runDeformGrid = false;
 				//init
-				activeTextureIndex = 12;
+				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 2;
 				initDepthState = true;
 				initDepth = 0;
-				runGoogleMap = true;
+				s1Counter = 0;
+				s2Counter = 0;
+				s3Counter = 0;
 
 				timer = 0;
 			}
@@ -1979,13 +2293,40 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F4) != GLFW_RELEASE)
 			{
 				randomizeDistortionState(100);
+				
+				// make sure we do not run other states
+				runDeformScene = false;
+				runGoogleMap = true;
+				runDeformText = false;
+				runVolumeSlicing = false;
+				runDeformGrid = false;
+
+				//init
+				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
+				initDepthState = true;
+				initDepth = 0;
+				
+
+				timer = 0;
+			}
+		}
+
+		// TASK 5
+		if (timer >= 0.25f)
+		{
+
+			if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F5) != GLFW_RELEASE)
+			{
+				randomizeDistortionState(100);
 				// make sure we do not run other states
 				runDeformScene = false;
 				runGoogleMap = false;
 				runDeformText = false;
-
+				runDeformGrid = false;
 				//init
-				activeTextureIndex = 49 + 16;
+				//activeTextureIndex = 49 + 16;
+				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size() / 2;
 				initDepthState = true;
 				initDepth = 0;
 				runVolumeSlicing = true;
@@ -1998,7 +2339,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		if (timer >= 0.25f)
 		{
 
-			if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F5) != GLFW_RELEASE)
+			if (glfwGetKey(window, GLFW_KEY_BACKSLASH) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_BACKSLASH) != GLFW_RELEASE)
 			{
 				// do not need to randomize in this case
 				bDebugTexture = false;
@@ -2008,13 +2349,14 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				runGoogleMap = false;
 				runVolumeSlicing = false;
 				runDeformText = false;
-
+				runDeformGrid = false;
 				//init
 				activeTextureIndex = 0;
 				initDepthState = true;
 				initDepth = 0;
-				
-
+				s1Counter = 0;
+				s2Counter = 0;
+				s3Counter = 0;
 				timer = 0;
 			}
 		}

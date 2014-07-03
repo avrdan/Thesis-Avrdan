@@ -222,7 +222,7 @@ void RawDepthPipeline::printPointCloudData()
 
 void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 {
-	worldPos.clear();
+	//worldPos.clear();
 	//screenPos.clear();
 	pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
 	//pos3dDepth = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
@@ -301,7 +301,7 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 	
 	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
 	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());
-	
+
 	// use this to align depth with color
 	//projection->MapDepthToColorCoordinates
 

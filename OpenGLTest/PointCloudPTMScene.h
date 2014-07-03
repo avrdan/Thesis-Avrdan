@@ -164,8 +164,25 @@ private:
 	bool runGoogleMap;
 	bool runDeformScene;
 	bool runDeformText;
+	bool runDeformGrid;
 
 	int getRandomNumber(int n);
 	void randomizeDistortionState(int bound);
+
+	ofstream outputMesh;
+
+	std::vector<PXCPoint3DF32> storedPos;
+	bool saveMesh;
+
+	vector<string> s1TextureNamesStr;
+	vector<string> s2TextureNamesStr;
+	vector<string> s3TextureNamesStr;
+	vector<string> s4TextureNamesStr;
+	vector<string> sVolumeSliceTextureNames;
+	vector<string> sVolumeSliceTextureNames2;
+
+	int s2Counter;
+	int s3Counter;
+	int s1Counter;
 };
 
