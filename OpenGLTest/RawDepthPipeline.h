@@ -25,6 +25,8 @@
 #include "pxcmetadata.h"
 #include "pxcsegmentation.h"
 
+#include <ppl.h>
+
 class RawDepthPipeline
 {
 public:
@@ -71,7 +73,7 @@ public:
 	std::vector<unsigned int> indices;
 	std::vector<unsigned short> depthData;
 
-	void renderFrame();
+	void renderFrame(bool useMedianFiltering, bool useWeightedMovingAverage);
 	pcl::PointCloud<pcl::PointXYZ>::Ptr renderFramePCL();
 	std::vector<PXCPoint3DF32> worldPos;
 	std::vector<PXCPoint3DF32> screenPos;
@@ -106,7 +108,7 @@ private:
 	void printPointCloudData();
 	void printSelectivePointCloudData(int selector);
 	void createPointCloud(PXCImage::ImageData ddepth);
-	void createPointCloudMappedToWorld(PXCImage::ImageData ddepth);
+	void createPointCloudMappedToWorld(PXCImage::ImageData ddepth, bool useMedianFiltering, bool useWeightedMovingAverage);
 	void createPointCloudMappedToWorld(PXCImage::ImageData ddepth, PXCImage::ImageData dcolor);
 	//void addIndexData();
 	void addIndexData(int width, int height);
@@ -114,5 +116,22 @@ private:
 	void addIndexDataTriangleStrip();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr createPointCloudPCL(PXCImage::ImageData ddepth);
 	void renderLoop();
+
+	// median filter window size
+	//static const int windowSize = 9;
+	static const int windowSize = 25;
+	void insertionSort(int window[]);
+	PXCPoint3DF32* medianFilter();
+	//create a sliding window of size 9
+	int window[windowSize];
+	PXCPoint3DF32* newPos2d;
+
+	// weighted moving average
+	std::list<PXCPoint3DF32*> averageList;
+	PXCPoint3DF32* weightedMovingAverage();
+	void checkForDequeue();
+	int averageFrameCount;
+	pxcF32* sumDepthArray;
+	PXCPoint3DF32* averagedDepthArray;
 };
 

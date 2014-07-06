@@ -179,10 +179,13 @@ private:
 	vector<string> s3TextureNamesStr;
 	vector<string> s4TextureNamesStr;
 	vector<string> sVolumeSliceTextureNames;
-	vector<string> sVolumeSliceTextureNames2;
+	//vector<string> sVolumeSliceTextureNames2;
 
 	int s2Counter;
 	int s3Counter;
 	int s1Counter;
+
+	bool useMedianFiltering;
+	bool useWeightedMovingAverage;
 };
 

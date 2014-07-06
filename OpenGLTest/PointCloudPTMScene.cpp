@@ -303,6 +303,9 @@ PointCloudPTMScene::PointCloudPTMScene()
 	s1Counter = 0;
 	s2Counter = 0;
 	s3Counter = 0;
+
+	useMedianFiltering = false;
+	useWeightedMovingAverage = false;
 }
 
 
@@ -449,7 +452,7 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 
 	//char **cVolumeSliceNames = new  char*[100];
 	const char *cVolumeSliceNames[99];
-	const char *cVolumeSliceNames2[99];
+	//const char *cVolumeSliceNames2[99];
 	string *s;
 	char numstr[21]; // enough to hold all numbers up to 64-bits
 	for (int i = 0; i < 99; i++)
@@ -469,7 +472,7 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 		}		
 	}
 
-	for (int i = 0; i < 99; i++)
+	/*for (int i = 0; i < 99; i++)
 	{
 		if (i < 10)
 		{
@@ -484,18 +487,28 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 			cVolumeSliceNames2[i] = s->c_str();
 			//cVolumeSliceNames[i] = "brain/brain_0" + i;
 		}
-	}
+	}*/
 
-	const char *s1TextureNames[] = { "Scenario1/grid_hd_A.jpg", "Scenario1/grid_hd_B.jpg", 
+	/*const char *s1TextureNames[] = { "Scenario1/grid_hd_A.jpg", "Scenario1/grid_hd_B.jpg", 
 		"Scenario1/grid_hd_centerPoint.jpg", "Scenario1/grid_hd_leftPoint.jpg", "Scenario1/grid_hd_lowerPoint.jpg", 
-		"Scenario1/grid_hd_rightPoint.jpg", "Scenario1/grid_hd_upperPoint.jpg"};
-	const char *s2TextureNames[] = { "Scenario2/random-text-2048x2048.jpg", "Scenario2/random-text-2048x2048_B.jpg", 
-		"Scenario2/random-text-2048x2048_centralPoint.jpg", "Scenario2/random-text-2048x2048_B._upperPoint.jpg",
-		"Scenario2/random-text-2048x2048_rightPoint.jpg", "Scenario2/random-text-2048x2048_B_lowerLeftPoint.jpg"};
-	const char *s3TextureNames[] = { "Scenario3/3D_Scene_011.jpg", "Scenario3/3D_Scene_011_B.jpg", "Scenario3/3D_Scene_011_B_left1.jpg", "Scenario3/3D_Scene_011_right1.jpg",
-		"Scenario3/3D_Scene_011_B_centralPoint.jpg", "Scenario3/3D_Scene_011_left2.jpg", "Scenario3/3D_Scene_011_B_right2.jpg"};
-	const char *s4TextureNames[] = { "Scenario4/NYMidZoomA.jpg", "Scenario4/NYMidZoomB.jpg" };
+		"Scenario1/grid_hd_rightPoint.jpg", "Scenario1/grid_hd_upperPoint.jpg"};*/
+	const char *s1TextureNames[] = { "Scenario1/grid_hd.jpg",
+		"Scenario1/grid_hd_centerPoint.jpg", "Scenario1/grid_hd_rightPoint.jpg", "Scenario1/grid_hd_lowerPoint.jpg" };
 	
+	
+	/*const char *s2TextureNames[] = { "Scenario2/random-text-2048x2048.jpg", "Scenario2/random-text-2048x2048_B.jpg", 
+		"Scenario2/random-text-2048x2048_centralPoint.jpg", "Scenario2/random-text-2048x2048_B._upperPoint.jpg",
+		"Scenario2/random-text-2048x2048_rightPoint.jpg", "Scenario2/random-text-2048x2048_B_lowerLeftPoint.jpg"};*/
+	const char *s2TextureNames[] = { "Scenario2/random-text-2048x2048.jpg", 
+		"Scenario2/random-text-2048x2048_centralPoint.jpg", "Scenario2/random-text-2048x2048_lowerPoint.jpg",
+		"Scenario2/random-text-2048x2048_leftPoint.jpg"};
+	//const char *s3TextureNames[] = { "Scenario3/3D_Scene_011.jpg", "Scenario3/3D_Scene_011_B.jpg", "Scenario3/3D_Scene_011_B_left1.jpg", "Scenario3/3D_Scene_011_right1.jpg",
+	//	"Scenario3/3D_Scene_011_B_centralPoint.jpg", "Scenario3/3D_Scene_011_left2.jpg", "Scenario3/3D_Scene_011_B_right2.jpg"};
+	const char *s3TextureNames[] = { "Scenario3/3D_Scene_011_B.jpg", "Scenario3/3D_Scene_011_B_left1.jpg", 
+		"Scenario3/3D_Scene_011_B_centralPoint.jpg", "Scenario3/3D_Scene_011_B_right2.jpg" };
+	//const char *s4TextureNames[] = { "Scenario4/NYMidZoomA.jpg", "Scenario4/NYMidZoomB.jpg" };
+	const char *s4TextureNames[] = { "Scenario4/NYMidZoomA.jpg"};
+
 	vector<string> sTextureNames(cTextureNames, &cTextureNames[sizeof(cTextureNames) / sizeof(cTextureNames[0])]);
 
 	s1TextureNamesStr = vector<string>(s1TextureNames, &s1TextureNames[sizeof(s1TextureNames) / sizeof(s1TextureNames[0])]);
@@ -504,14 +517,14 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 	s4TextureNamesStr = vector<string>(s4TextureNames, &s4TextureNames[sizeof(s4TextureNames) / sizeof(s4TextureNames[0])]);
 
 	sVolumeSliceTextureNames  = vector<string>(cVolumeSliceNames, &cVolumeSliceNames[sizeof(cVolumeSliceNames) / sizeof(cVolumeSliceNames[0])]);
-	sVolumeSliceTextureNames2 =vector<string>(cVolumeSliceNames2, &cVolumeSliceNames2[sizeof(cVolumeSliceNames2) / sizeof(cVolumeSliceNames2[0])]);
+	//sVolumeSliceTextureNames2 =vector<string>(cVolumeSliceNames2, &cVolumeSliceNames2[sizeof(cVolumeSliceNames2) / sizeof(cVolumeSliceNames2[0])]);
 	
 	sTextureNames.insert(sTextureNames.end(), s1TextureNamesStr.begin(), s1TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), s2TextureNamesStr.begin(), s2TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), s3TextureNamesStr.begin(), s3TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), s4TextureNamesStr.begin(), s4TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), sVolumeSliceTextureNames.begin(), sVolumeSliceTextureNames.end());
-	sTextureNames.insert(sTextureNames.end(), sVolumeSliceTextureNames2.begin(), sVolumeSliceTextureNames2.end());
+	//sTextureNames.insert(sTextureNames.end(), sVolumeSliceTextureNames2.begin(), sVolumeSliceTextureNames2.end());
 	loadAllTextures(sTextureNames);
 	//loadAllTextures(sVolumeSliceTextureNames);
 
@@ -549,7 +562,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	}*/
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	rdp->renderFrame();
+	rdp->renderFrame(useMedianFiltering, useWeightedMovingAverage);
 	timer += getDeltaTime();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::mat4 mModelView;
@@ -1342,8 +1355,9 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			//cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
 			depthDiff = initDepth - depth;
 
-			if(activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size())
-				activeTextureIndex++;
+			activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
+			//if(activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size())
+			//	activeTextureIndex++;
 
 			// convert the step to metric space(the point was not converted initially)
 			/*if (depthDiff > volumeSliceStep * 1000)
@@ -1373,8 +1387,10 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			//cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
 			depthDiff = initDepth - depth;
 
-			if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size() + 1)
-				activeTextureIndex--;
+			//if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size() + 1)
+			//	activeTextureIndex--;
+			activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
+
 			/*if (depthDiff > volumeSliceStep)
 			{
 				if (activeTextureIndex == 12)
@@ -1391,63 +1407,83 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	if (runVolumeSlicing)
 	{
 		float depthDiff;
+
+		if (initDepthState)
+		{
+			if (bDebugTexture)
+			{
+				float wpd = rdp->centerDepth;
+				initDepth = wpd/1000.0f;
+				initDepthState = false;
+
+				cout << "INIT DEPTH:" << initDepth << endl;
+			}
+			else
+			{
+				initDepth = getGLDepth(1920 / 2, 1080 / 2, mModelView, frustum);
+				initDepthState = false;
+
+				cout << "INIT DEPTH:" << initDepth << endl;
+			}
+		}
+
 		if (bDebugTexture)
 		{
 			
 			// fails...problem, don't know how many points actually made it to array
 			// cannot properly get map from center
-			//float wpd = rdp->worldPos.at(320 * 320/2 + 240/2).z;
 
 			// corresponds roughly to the middle of the depth stream
-			float wpd = rdp->centerDepth;
-			//cout << "World Pos Depth: " << wpd << endl;
-			//wpd /= 1000.0f; // convert to metric space
+			/*float wpd = rdp->centerDepth;
+
 
 			if (initDepthState)
 			{
-				activeTextureIndex += sVolumeSliceTextureNames.size();
-				/*activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
-					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size() / 2;*/
+				//activeTextureIndex += sVolumeSliceTextureNames.size();
+				//activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+				//	+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size() / 2;
 
 				initDepth = wpd;
 				initDepthState = false;
 
 				cout << "INIT DEPTH:" << initDepth << endl;
-			}
+			}*/
 
-			float depth = rdp->centerDepth;
+			float depth = rdp->centerDepth/1000.0f;
 			//cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
 			depthDiff = initDepth - depth;
 			
 			// convert the step to metric space(the point was not converted initially)
-			if (depthDiff > volumeSliceStep*1000)
+			if (depthDiff > volumeSliceStep)
 			{
 				if (continuousMode)
 				{
 					initDepth = depth;
 				}
 
+				//if (activeTextureIndex < 15 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+				//	+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size())
 				if (activeTextureIndex < 15 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
-					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size())
+					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size())
 					activeTextureIndex++;
 			}
-			else if (depthDiff < -volumeSliceStep*1000)
+			else if (depthDiff < -volumeSliceStep)
 			{
 				if (continuousMode)
 				{
 					initDepth = depth;
 				}
 				if (activeTextureIndex > 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
-					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size())
+					+ s4TextureNamesStr.size())
 					activeTextureIndex--;
 			}
 		}
 		else
 		{
 			// normal mesh projection
-			if (initDepthState)
+			/*if (initDepthState)
 			{
-				activeTextureIndex -= sVolumeSliceTextureNames2.size();
+				//activeTextureIndex -= sVolumeSliceTextureNames2.size();
 				//activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
 				//	+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() / 2;
 
@@ -1455,7 +1491,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				initDepthState = false;
 
 				cout << "INIT DEPTH:" << initDepth << endl;
-			}
+			}*/
 
 			float depth = getGLDepth(1920 / 2, 1080 / 2, mModelView, frustum);
 			//cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
@@ -1665,43 +1701,45 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			// RESET STATES
 			if (runVolumeSlicing || runGoogleMap || runDeformScene || runDeformText || runDeformGrid)
 			{
-				if (runVolumeSlicing)
+				if (!runVolumeSlicing)
 				{
-
+					initDepthState = true;
+					initDepth = 0;
 				}
 					//activeTextureIndex = 49 + 17;
 				//if (runGoogleMap)
 				//	activeTextureIndex = 12;
 				if (runDeformText)
 				{
-					if (activeTextureIndex == 16 + s1TextureNamesStr.size())
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
+					/*if (activeTextureIndex == 16 + s1TextureNamesStr.size())
 						activeTextureIndex++;
 					else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + 1)
 					{
 						activeTextureIndex--;
-					}
+					}*/
 				}
 				if (runDeformScene)
 				{
-					if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size())
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
+					/*if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size())
 						activeTextureIndex++;
 					else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1)
 					{
 						activeTextureIndex--;
-					}
+					}*/
 				}
 				if (runDeformGrid)
 				{
-					if (activeTextureIndex == 16)
+					activeTextureIndex = 16 + 1;
+					/*if (activeTextureIndex == 16)
 						activeTextureIndex++;
 					else if (activeTextureIndex == 16 + 1)
 					{
 						activeTextureIndex--;
-					}
+					}*/
 				}
 			
-				initDepthState = true;
-				initDepth = 0;
 			}
 
 
@@ -1717,7 +1755,9 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		{
 			if (runDeformText)
 			{
-				if(activeTextureIndex == 16 + s1TextureNamesStr.size() + 3)
+				if (activeTextureIndex >= 16 + s1TextureNamesStr.size() + 1)
+					activeTextureIndex = 16 + s1TextureNamesStr.size();
+				/*if(activeTextureIndex == 16 + s1TextureNamesStr.size() + 3)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
 				}
@@ -1732,12 +1772,13 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + 2)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size();
-				}
+				}*/
 			}
 			else if (runDeformScene)
 			{
-
-				if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 3)
+				if (activeTextureIndex > 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size())
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
+				/*if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 3)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
 				}
@@ -1756,12 +1797,13 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 2)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
-				}
+				}*/
 			}
 			else if (runDeformGrid)
 			{
-
-				if (activeTextureIndex == 16 + 3)
+				if (activeTextureIndex > 16)
+					activeTextureIndex = 16;
+				/*if (activeTextureIndex == 16 + 3)
 				{
 					activeTextureIndex = 16 + 1;
 				}
@@ -1780,7 +1822,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				else if (activeTextureIndex == 16 + 2)
 				{
 					activeTextureIndex = 16;
-				}
+				}*/
 			}
 			//bool sml = isStartMouseLook();
 			//setStartMouseLook(!sml);
@@ -1794,8 +1836,22 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		{
 			if (runDeformText)
 			{
-
 				if (s2Counter == 0)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 2;
+					s2Counter++;
+				}
+				else if (s2Counter == 1)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 3;
+					s2Counter++;
+				}
+				else if (s2Counter == 2)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
+					s2Counter = 0;
+				}
+				/*if (s2Counter == 0)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + 3;
 					s2Counter++;
@@ -1814,12 +1870,26 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + 2;
 					s2Counter = 0;
-				}
+				}*/
 			}
 			else if (runDeformScene)
 			{
-
 				if (s3Counter == 0)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 2;
+					s3Counter++;
+				}
+				else if (s3Counter == 1)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 3;
+					s3Counter++;
+				}
+				else if (s3Counter == 2)
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
+					s3Counter = 0;
+				}
+				/*if (s3Counter == 0)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 3;
 					s3Counter++;
@@ -1843,12 +1913,26 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 2;
 					s3Counter = 0;
-				}
+				}*/
 			}
 			else if (runDeformGrid)
 			{
-
 				if (s1Counter == 0)
+				{
+					activeTextureIndex = 16 + 2;
+					s1Counter++;
+				}
+				else if (s1Counter == 1)
+				{
+					activeTextureIndex = 16 + 3;
+					s1Counter++;
+				}
+				else if (s1Counter == 2)
+				{
+					activeTextureIndex = 16 + 1;
+					s1Counter = 0;
+				}
+				/*if (s1Counter == 0)
 				{
 					activeTextureIndex = 16 + 3;
 					s1Counter++;
@@ -1872,7 +1956,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + 2;
 					s1Counter = 0;
-				}
+				}*/
 			}
 			//bool sml = isStartMouseLook();
 			//setStartMouseLook(!sml);
@@ -2221,7 +2305,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				runDeformText = false;
 
 				//init
-				activeTextureIndex = 16 + 2;
+				activeTextureIndex = 16 + 1;
 				initDepthState = true;
 				initDepth = 0;
 				s1Counter = 0;
@@ -2249,7 +2333,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				runDeformGrid = false;
 				//init
 				// jump to central point
-				activeTextureIndex = 16 + s1TextureNamesStr.size() + 2;
+				activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
 				initDepthState = true;
 				initDepth = 0;
 				s1Counter = 0;
@@ -2275,7 +2359,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				runDeformGrid = false;
 				runDeformGrid = false;
 				//init
-				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 2;
+				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
 				initDepthState = true;
 				initDepth = 0;
 				s1Counter = 0;
@@ -2296,7 +2380,6 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				
 				// make sure we do not run other states
 				runDeformScene = false;
-				runGoogleMap = true;
 				runDeformText = false;
 				runVolumeSlicing = false;
 				runDeformGrid = false;
@@ -2305,7 +2388,10 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
 				initDepthState = true;
 				initDepth = 0;
-				
+				runGoogleMap = true;
+				s1Counter = 0;
+				s2Counter = 0;
+				s3Counter = 0;
 
 				timer = 0;
 			}
@@ -2326,10 +2412,21 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				//init
 				//activeTextureIndex = 49 + 16;
 				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
-					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size() / 2;
+					+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() / 2;
+				/*if (!bDebugTexture)
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+						+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size() + sVolumeSliceTextureNames2.size() / 2;
+				else
+				{
+					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+						+ s4TextureNamesStr.size() + sVolumeSliceTextureNames.size()/2;
+				}*/
 				initDepthState = true;
 				initDepth = 0;
 				runVolumeSlicing = true;
+				s1Counter = 0;
+				s2Counter = 0;
+				s3Counter = 0;
 
 				timer = 0;
 			}
@@ -2378,13 +2475,52 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				timer = 0;
 			}
 		}
+
+		if (timer >= 0.25f)
+		{
+			if (glfwGetKey(window, GLFW_KEY_APOSTROPHE) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_APOSTROPHE) != GLFW_RELEASE)
+			{
+				useMedianFiltering = !useMedianFiltering;
+				timer = 0;
+			}
+		}
+
+		if (timer >= 0.25f)
+		{
+			if (glfwGetKey(window, GLFW_KEY_SEMICOLON) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_SEMICOLON) != GLFW_RELEASE)
+			{
+				useWeightedMovingAverage = !useWeightedMovingAverage;
+				timer = 0;
+			}
+		}
+
+		if (timer >= 0.25f)
+		{
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_RELEASE)
+			{
+				cout << "MOUSE1 ACTION" << endl;
+				bDebugTexture = false;
+				timer = 0;
+			}
+		}
+
+		if (timer >= 0.25f)
+		{
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_RELEASE)
+			{
+				cout << "MOUSE2 ACTION" << endl;
+				bDebugTexture = true;
+				timer = 0;
+			}
+		}
 	// end user interaction
 
+		/*
 	// Swap front and back buffers
 	glfwSwapBuffers(window);
 	// Poll for and process events
 	glfwPollEvents();
-
+	*/
 	pipeline->updateTimer();
 }
 

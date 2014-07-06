@@ -122,7 +122,7 @@ void PointCloudScene::initScene(GLFWwindow *window)
 void PointCloudScene::renderScene(GLFWwindow *window)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	rdp->renderFrame();
+	rdp->renderFrame(false, false);
 	// convert pvertexmem to glm
 	// update vertex data	
 	//rdp->pVertexMem->

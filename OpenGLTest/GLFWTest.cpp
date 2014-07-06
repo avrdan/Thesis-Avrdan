@@ -56,9 +56,12 @@ int wmain(int argc, WCHAR* argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_SAMPLES, 0); // 4x Antialiasing
+	glfwWindowHint(GLFW_SAMPLES, 0); 
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		
+
+	// does not appear to help...
+	//glfwWindowHint(GLFW_SAMPLES, 4); // 4x Antialiasing
 	
 	/* Create a windowed mode window and its OpenGL Context*/
 	// get the current Desktop screen resolution and colour depth
@@ -113,7 +116,7 @@ int wmain(int argc, WCHAR* argv[])
 	//std::cout << "OPENGL GLFW INIT error: " << gluErrorString(glGetError()) << "\n";
 
 	// keyboard input
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
 	
 	// clear to dark blue
 	glClearColor(0.0f, 0.0f, 0.4f, 1.0f);
@@ -154,24 +157,83 @@ int wmain(int argc, WCHAR* argv[])
 	scene = new PointCloudPTMScene();
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	scene->initScene(window);
-	int nFrames = 10;
+	int nFrames = 3;
+	bool m_antialias = false;
+	float fFrameInterval;
+	float tLastFrame;
+	float timer = 0;
+	int i = 0;
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
 	{
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		/*glClear(GL_ACCUM_BUFFER_BIT);
-		for (int i = 0; i < nFrames; i++)
-		{	
-			scene->renderScene(window);
-			glAccum(GL_ACCUM, 1 / nFrames);
-
-			glDrawBuffer(GL_FRONT);
-			glAccum(GL_RETURN, nFrames / (i+1));
-			glDrawBuffer(GL_BACK);
+		/*if (timer >= 0.25f)
+		{
+			if (glfwGetKey(window, GLFW_KEY_SEMICOLON) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_SEMICOLON) != GLFW_RELEASE)
+			{
+				cout << "CHANGING ALIASING STATE" << endl;
+				m_antialias = !m_antialias;
+			}
+			timer = 0;
 		}*/
+		
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if (m_antialias)
+		{
+			
+			scene->renderScene(window);
+			if (i == 0)
+				glAccum(GL_LOAD, 1.0 / nFrames);
+			else
+				glAccum(GL_ACCUM, 1 / nFrames);
 
-		scene->renderScene(window);
+			i++;
+
+			if (i >= nFrames)
+			{
+				i = 0;
+				glAccum(GL_RETURN, 1.0);
+				// Swap front and back buffers
+				glfwSwapBuffers(window);
+				// Poll for and process events
+				glfwPollEvents();
+
+				glClear(GL_ACCUM_BUFFER_BIT);
+			}
+			/*for (int i = 0; i < nFrames; i++)
+			{
+				scene->renderScene(window);
+				glAccum(GL_ACCUM, 1 / nFrames);
+
+				glDrawBuffer(GL_FRONT);
+				glAccum(GL_RETURN, nFrames / (i + 1));
+				glDrawBuffer(GL_BACK);
+
+				// Swap front and back buffers
+				glfwSwapBuffers(window);
+				// Poll for and process events
+				glfwPollEvents();
+			}*/
+			//glAccum(GL_RETURN, 1.0);
+		
+		}
+		else
+		{
+			scene->renderScene(window);
+			// Swap front and back buffers
+			glfwSwapBuffers(window);
+			// Poll for and process events
+			glfwPollEvents();
+		}
+
+		//computeMatricesFromInputs(window);
+		//timer += getDeltaTime();
 	}
+
+	
+	
+	//clock_t tCur = clock();
+	//fFrameInterval = float(tCur - tLastFrame) / float(CLOCKS_PER_SEC);
+	//tLastFrame = tCur;
 
 	scene->releaseScene();
 	glfwTerminate();

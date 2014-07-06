@@ -90,7 +90,7 @@ RawDepthPipeline::RawDepthPipeline()
 	//addIndexDataTriangles();
 	//addIndexDataTriangleStrip();
 	nSize = 5;
-
+	averageFrameCount = 10;
 }
 
 
@@ -127,7 +127,7 @@ void RawDepthPipeline::renderLoop()
 	}
 }
 
-void RawDepthPipeline::renderFrame()
+void RawDepthPipeline::renderFrame(bool useMedianFiltering, bool useWeightedMovingAverage)
 {
 	/*if ((pSegInfo.faceMode != g_face_mode) || (pSegInfo.maxDepthThreshold != g_max_distance))
 	{
@@ -156,7 +156,7 @@ void RawDepthPipeline::renderFrame()
 	depth_image->AcquireAccess(PXCImage::ACCESS_READ, &ddepth);
 	//color_image->AcquireAccess(PXCImage::ACCESS_READ, &dcolor);
 	//createPointCloud(ddepth);
-	createPointCloudMappedToWorld(ddepth);
+	createPointCloudMappedToWorld(ddepth, useMedianFiltering, useWeightedMovingAverage);
 	//createPointCloudMappedToWorld(ddepth, dcolor);
 	// NOTE THAT NOT ALL ARRAY VALUES ARE VALID FOR
 	// JUST THE ONES WITH DEPTH > 10
@@ -220,57 +220,32 @@ void RawDepthPipeline::printPointCloudData()
 		
 }
 
-void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
+void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth, bool useMedianFiltering, bool useWeightedMovingAverage)
 {
-	//worldPos.clear();
-	//screenPos.clear();
-	pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
-	//pos3dDepth = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
-	//screenPos = std::vector<PXCPoint3DF32>(nPoints);
-	
-	//screenPos.erase(screenPos.begin(), screenPos.end());
-	//screenPos.resize(nPoints);
-	//screenPos.reserve(nPoints);
-	//worldPos = new std::vector<PXCPoint3DF32>(nPoints);
-	//delete[] pos3d;
-	//pos3d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
-
+	pos2d = (PXCPoint3DF32*)new PXCPoint3DF32[depthCamWidth*depthCamHeight];
 	int n = 0;
-	//pos3d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+
 	// find depth image stride
 	int depthStride = ddepth.pitches[0] / sizeof(pxcU16);
 	pxcU16 lastDepthValue = 0;
-	int undefined;
+
 	for (int y = 0; y < depthCamHeight; y++)
 	{
 		for (int x = 0; x < depthCamWidth; x++)
 		{
 			pxcU16 depthValue = ((pxcU16*)ddepth.planes[0])[y * depthStride + x];
-			
-			//screenPos[n].x = (pxcF32)x;
-			//screenPos[n].y = (pxcF32)y;
-			//screenPos[n].z = (pxcF32)1000;
-			//pos2d[n].z = (pxcF32)1000;
-			//pos2d[n].x = undefined;
-			//pos2d[n].y = undefined;
-			//pos2d[n].z = undefined;
+
 			// raw depth data
 			
 			if (x == depthCamWidth / 2 && y == depthCamHeight / 2)
 				centerDepth = depthValue;
 
 			lastDepthValue = depthValue;
-			if (depthValue > 10 && depthValue < 1500)
+			if (depthValue > 10 && depthValue < 2000)
 			{
-				//screenPos[n].x = (pxcF32)x;
-				//screenPos[n].y = (pxcF32)y;
-				//screenPos[n].z = (pxcF32)depthValue;
-
 				pos2d[n].x = (pxcF32)x;
 				pos2d[n].y = (pxcF32)y;
-				pos2d[n].z = (pxcF32)depthValue;
-				
-				
+				pos2d[n].z = (pxcF32)depthValue;	
 			}
 			n++;
 		}
@@ -278,38 +253,20 @@ void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth)
 
 	n = 0;
 
-	/*for (int y = nSize; y < depthCamHeight; y++)
-	{
-		for (int x = nSize; x < depthCamWidth; x++)
-		{
-			if (pos2d[x * depthCamHeight + y].z)
-			{
-				// apply median filter
-				//pos2d[x * depthCamHeight + y]
-				PXCPoint3DF32* temp;
-				for (int i = 0; i < nSize; i++)
-					for (int j = 0; j < nSize; j++)
-					{
-						temp[j*nSize + i] = pos2d[(x-j) * depthCamHeight + (y-i)];
-					}
-			}
-			n++;
-		}
-	}*/
+	// apply median filter (requires another pass)
+	// spatial smoothing
+	if (useMedianFiltering)
+		pos2d = medianFilter();
 
-	// convert to color first
-	
-	//projection->ProjectImageToRealWorld(nPoints, screenPos.data(), worldPos.data());
+	// use weighted moving average
+	// temporal smoothing
+	if (useWeightedMovingAverage)
+		pos2d = weightedMovingAverage();
+
 	projection->ProjectImageToRealWorld(nPoints, &pos2d[0], worldPos.data());
-
-	// use this to align depth with color
-	//projection->MapDepthToColorCoordinates
-
-	delete[] pos2d;
 	
-	//indices.clear();
-	//addIndexData();
-	//std::copy(&pos3d[0], &pos3d[nPoints], std::back_inserter(worldPos));
+	// cleanup
+	delete[] pos2d;
 }
 
 void RawDepthPipeline::createPointCloudMappedToWorld(PXCImage::ImageData ddepth, PXCImage::ImageData dcolor)
@@ -595,7 +552,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr RawDepthPipeline::createPointCloudPCL(PXCIma
 			
 			if (z && z < 2000)
 			{
-
 				// normalize vertices to meters
 				cloud->points[idx / 3].x = ((float)x) / 1000.0;
 				cloud->points[idx / 3].y = ((float)y) / 1000.0;
@@ -606,4 +562,187 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr RawDepthPipeline::createPointCloudPCL(PXCIma
 	}
 
 	return cloud;
+}
+
+//sort the window using insertion sort
+//insertion sort is best for this sorting
+void RawDepthPipeline::insertionSort(int window[])
+{
+	int temp, i, j;
+	for (i = 0; i < windowSize; i++){
+		temp = window[i];
+		for (j = i - 1; j >= 0 && temp < window[j]; j--){
+			window[j + 1] = window[j];
+		}
+		window[j + 1] = temp;
+	}
+}
+
+PXCPoint3DF32*  RawDepthPipeline::medianFilter()
+{
+	newPos2d = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	bool skip = false;
+
+	int size = sqrt(windowSize);
+	int midIndex = (size - 1) / 2;
+
+	/*Concurrency::parallel_for(midIndex, depthCamHeight - midIndex,
+		[&](int y)
+	{
+		Concurrency::parallel_for(midIndex, depthCamWidth - midIndex,
+			[&](int x)
+		{
+		*/	
+	
+	for (int y = midIndex; y < depthCamHeight - midIndex; y++)
+	{
+		for (int x = midIndex; x < depthCamWidth - midIndex; x++)
+		{
+			int index = 0;
+	
+			for (int i = 0; i < size; i++)
+			{
+				for (int j = 0; j < size; j++)
+				{
+					window[index] = pos2d[(y - midIndex + i) * depthCamWidth + (x - midIndex + j)].z;
+					index++;
+				}
+			}
+
+			/*Concurrency::parallel_for(0, size,
+				[&](int i)
+			{
+				Concurrency::parallel_for(0, size,
+					[&](int j)
+				{
+					window[index] = pos2d[(y - midIndex + i) * depthCamWidth + (x - midIndex + j)].z;
+					index++;
+				});
+			});*/
+
+			for (int i = 0; i < windowSize; i++)
+			{
+				if (window[i] < 10 || window[i] > 2000)
+				{
+					skip = true;
+					break;
+				}
+					
+			}
+
+			if (skip)
+			{
+				skip = false;
+				continue;
+			}
+			else
+			{
+				// sort the window to find median
+				insertionSort(window);
+
+				// assign the median to centered element of the matrix
+				newPos2d[y * depthCamWidth + x].z = (pxcF32)window[(windowSize - 1) / 2];
+				newPos2d[y * depthCamWidth + x].x = (pxcF32)x;
+				newPos2d[y * depthCamWidth + x].y = (pxcF32)y;
+			}
+
+
+		}
+	}
+	//	});
+	//});
+
+	delete[] pos2d;
+	return newPos2d;
+	//return pos2d;
+}
+
+PXCPoint3DF32* RawDepthPipeline::weightedMovingAverage()
+{
+	// push array to the back of the list
+	averageList.push_back(pos2d);
+	
+	// check if we have to remove the oldest depth array
+	checkForDequeue();
+
+	sumDepthArray = (pxcF32*)new pxcF32[nPoints];
+	
+	for (int i = 0; i < nPoints; i++)
+	{
+		sumDepthArray[i] = 0;
+	}
+	
+	averagedDepthArray = (PXCPoint3DF32*)new PXCPoint3DF32[nPoints];
+	
+	// divide by this to average the weights
+	int denominator = 0;
+	// priority
+	int count = 1;
+
+	// We first create a single array, summing all of the pixels of each frame on a weighted basis
+	// and determining the denominator that we will be using later.
+	for each (PXCPoint3DF32* item in averageList)
+	{
+
+		// process each row in paralel
+		Concurrency::parallel_for(0, depthCamHeight,
+			[&](int depthArrayRowIndex)
+		{
+			// Process each pixel in the row
+			for (int depthArrayColumnIndex = 0; depthArrayColumnIndex < depthCamWidth; depthArrayColumnIndex++)
+			{
+				int index = depthArrayColumnIndex + (depthArrayRowIndex * depthCamWidth);
+
+				if (sumDepthArray[index] == 0 && count > 1)
+					continue;
+
+				if (item[index].z > 100 && item[index].z < 2000)
+				{
+					sumDepthArray[index] += (pxcF32)item[index].z * count;
+				}
+				else
+					sumDepthArray[index] = 0;
+			}
+		});
+
+		denominator += count;
+		count++;
+	}
+
+	// Once we have summed all of the information on a weighted basis, we can divide each pixel
+	// by our calculated denominator to get a weighted average.
+	// Process each row in parallel
+	Concurrency::parallel_for(0, depthCamHeight,
+		[&](int depthArrayRowIndex)
+	{
+		// Process each pixel in the row
+		for (int depthArrayColumnIndex = 0; depthArrayColumnIndex < depthCamWidth; depthArrayColumnIndex++)
+		{
+			int index = depthArrayColumnIndex + (depthArrayRowIndex * depthCamWidth);
+			
+			if (sumDepthArray[index] > 10*averageFrameCount && sumDepthArray[index] <= 5000000)
+			{
+				averagedDepthArray[index].x = depthArrayColumnIndex;
+				averagedDepthArray[index].y = depthArrayRowIndex;
+				//if (sumDepthArray[index] / denominator > 10)
+					averagedDepthArray[index].z = (pxcF32)(sumDepthArray[index] / denominator);
+			}
+		}
+	});
+
+	delete[] sumDepthArray;
+	return averagedDepthArray;
+}
+
+void RawDepthPipeline::checkForDequeue()
+{
+	// We will recursively check to make sure we have Dequeued enough frames.
+	// This is due to the fact that a user could constantly be changing the UI element
+	// that specifies how many frames to use for averaging.
+	if (averageList.size() > averageFrameCount)
+	{
+		delete[] averageList.front();
+		averageList.pop_front();
+		checkForDequeue();
+	}
 }
