@@ -135,6 +135,9 @@
     <ClCompile Include="PointCloudPTMScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simpleScene.h">
@@ -230,6 +233,9 @@
     <ClInclude Include="PointCloudPTMScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\shader.vert" />
@@ -279,5 +285,7 @@
     <None Include="assets\shaders\ptm_color.vert" />
     <None Include="assets\shaders\heatMap.frag" />
     <None Include="assets\shaders\heatMap.vert" />
+    <None Include="assets\shaders\text.frag" />
+    <None Include="assets\shaders\text.vert" />
   </ItemGroup>
 </Project>

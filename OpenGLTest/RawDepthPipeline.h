@@ -118,8 +118,8 @@ private:
 	void renderLoop();
 
 	// median filter window size
-	//static const int windowSize = 9;
-	static const int windowSize = 25;
+	static const int windowSize = 9;
+	//static const int windowSize = 25;
 	void insertionSort(int window[]);
 	PXCPoint3DF32* medianFilter();
 	//create a sliding window of size 9

@@ -39,6 +39,11 @@ PointCloudPTMScene::PointCloudPTMScene()
 	frustumVertexShaderSource   = "./assets/shaders/simple.vert";
 	frustumFragmentShaderSource = "./assets/shaders/simple.frag";
 
+	// text shader
+	textVertexShaderSource = "./assets/shaders/text.vert";
+	textFragmentShaderSource = "./assets/shaders/text.frag";
+
+
 	// frustum params
 	pFovY = 60.0;
 	pAR = 16.0f / 9.0f;
@@ -306,6 +311,12 @@ PointCloudPTMScene::PointCloudPTMScene()
 
 	useMedianFiltering = false;
 	useWeightedMovingAverage = false;
+	bShowText = false;
+	bAIsFirst = true;
+
+	slowdown = 0;
+	bRenderFrame = true;
+	started = true;
 }
 
 
@@ -352,7 +363,7 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 
 	//projectorP = glm::perspective(11.25f, aspect, pNear, pFar);
 	//projectorP = glm::perspective(11.4f, aspect, pNear, pFar);
-	projectorP = glm::perspective(11.4f, aspect, pNear, pFar);
+	projectorP = glm::perspective(11.55f, aspect, pNear, pFar);
 
 	/*projectorP = glm::mat4(-2.86342, -0, -0, -0,
 		0, 5.2496, 0, 0,
@@ -509,6 +520,41 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 	//const char *s4TextureNames[] = { "Scenario4/NYMidZoomA.jpg", "Scenario4/NYMidZoomB.jpg" };
 	const char *s4TextureNames[] = { "Scenario4/NYMidZoomA.jpg"};
 
+	const char * s1MainNames[10];
+	const char * s1CenterNames[10];
+	const char * s1LeftNames[10];
+	const char * s1RightNames[10];
+
+	const char * s2MainNames[10];
+	const char * s2CenterNames[10];
+	const char * s2LeftNames[10];
+	const char * s2RightNames[10];
+
+	const char * s3MainNames[10];
+	const char * s3CenterNames[10];
+	const char * s3LeftNames[10];
+	const char * s3RightNames[10];
+
+	const char * s4MainNames[10];
+
+	//ew string("Scenario5/dynamic/Center/s1_center_00" + string(_itoa(i, numstr, 10)) + ".jpg");
+	readTextureNames("Scenario1/dynamic/Main/s1_main_00", s1MainNames, 10);
+	readTextureNames("Scenario1/dynamic/Center/s1_center_00", s1CenterNames, 10);
+	readTextureNames("Scenario1/dynamic/Left/s1_left_00", s1LeftNames, 10);
+	readTextureNames("Scenario1/dynamic/Right/s1_right_00", s1RightNames, 10);
+
+	readTextureNames("Scenario2/dynamic/Main/s2_main_00", s2MainNames, 10);
+	readTextureNames("Scenario2/dynamic/Center/s2_center_00", s2CenterNames, 10);
+	readTextureNames("Scenario2/dynamic/Left/s2_left_00", s2LeftNames, 10);
+	readTextureNames("Scenario2/dynamic/Right/s2_right_00", s2RightNames, 10);
+
+	readTextureNames("Scenario3/dynamic/Main/s3_main_00", s3MainNames, 10);
+	readTextureNames("Scenario3/dynamic/Center/s3_center_00", s3CenterNames, 10);
+	readTextureNames("Scenario3/dynamic/Left/s3_left_00", s3LeftNames, 10);
+	readTextureNames("Scenario3/dynamic/Right/s3_right_00", s3RightNames, 10);
+
+	readTextureNames("Scenario4/dynamic/s4_main_00", s4MainNames, 10);
+
 	vector<string> sTextureNames(cTextureNames, &cTextureNames[sizeof(cTextureNames) / sizeof(cTextureNames[0])]);
 
 	s1TextureNamesStr = vector<string>(s1TextureNames, &s1TextureNames[sizeof(s1TextureNames) / sizeof(s1TextureNames[0])]);
@@ -519,12 +565,51 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 	sVolumeSliceTextureNames  = vector<string>(cVolumeSliceNames, &cVolumeSliceNames[sizeof(cVolumeSliceNames) / sizeof(cVolumeSliceNames[0])]);
 	//sVolumeSliceTextureNames2 =vector<string>(cVolumeSliceNames2, &cVolumeSliceNames2[sizeof(cVolumeSliceNames2) / sizeof(cVolumeSliceNames2[0])]);
 	
+	s1MainNamesStr = vector<string>(s1MainNames, &s1MainNames[sizeof(s1MainNames) / sizeof(s1MainNames[0])]);
+	s1CenterNamesStr = vector<string>(s1CenterNames, &s1CenterNames[sizeof(s1CenterNames) / sizeof(s1CenterNames[0])]);;
+	s1LeftNamesStr = vector<string>(s1LeftNames, &s1LeftNames[sizeof(s1LeftNames) / sizeof(s1LeftNames[0])]);;
+	s1RightNamesStr = vector<string>(s1RightNames, &s1RightNames[sizeof(s1RightNames) / sizeof(s1RightNames[0])]);;
+
+	s2MainNamesStr = vector<string>(s2MainNames, &s2MainNames[sizeof(s2MainNames) / sizeof(s2MainNames[0])]);;
+	s2CenterNamesStr = vector<string>(s2CenterNames, &s2CenterNames[sizeof(s2CenterNames) / sizeof(s2CenterNames[0])]);;
+	s2LeftNamesStr = vector<string>(s2LeftNames, &s2LeftNames[sizeof(s2LeftNames) / sizeof(s2LeftNames[0])]);;
+	s2RightNamesStr = vector<string>(s2RightNames, &s2RightNames[sizeof(s2RightNames) / sizeof(s2RightNames[0])]);;
+
+	s3MainNamesStr = vector<string>(s3MainNames, &s3MainNames[sizeof(s3MainNames) / sizeof(s3MainNames[0])]);;
+	s3CenterNamesStr = vector<string>(s3CenterNames, &s3CenterNames[sizeof(s3CenterNames) / sizeof(s3CenterNames[0])]);;
+	s3LeftNamesStr = vector<string>(s3LeftNames, &s3LeftNames[sizeof(s3LeftNames) / sizeof(s3LeftNames[0])]);;
+	s3RightNamesStr = vector<string>(s3RightNames, &s3RightNames[sizeof(s3RightNames) / sizeof(s3RightNames[0])]);;
+
+	s4MainNamesStr = vector<string>(s4MainNames, &s4MainNames[sizeof(s4MainNames) / sizeof(s4MainNames[0])]);;
+
 	sTextureNames.insert(sTextureNames.end(), s1TextureNamesStr.begin(), s1TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), s2TextureNamesStr.begin(), s2TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), s3TextureNamesStr.begin(), s3TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), s4TextureNamesStr.begin(), s4TextureNamesStr.end());
 	sTextureNames.insert(sTextureNames.end(), sVolumeSliceTextureNames.begin(), sVolumeSliceTextureNames.end());
+
+	sTextureNames.insert(sTextureNames.end(), s1MainNamesStr.begin(), s1MainNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s1CenterNamesStr.begin(), s1CenterNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s1LeftNamesStr.begin(), s1LeftNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s1RightNamesStr.begin(), s1RightNamesStr.end());
+
+	sTextureNames.insert(sTextureNames.end(), s2MainNamesStr.begin(), s2MainNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s2CenterNamesStr.begin(), s2CenterNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s2LeftNamesStr.begin(), s2LeftNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s2RightNamesStr.begin(), s2RightNamesStr.end());
+
+	sTextureNames.insert(sTextureNames.end(), s3MainNamesStr.begin(), s3MainNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s3CenterNamesStr.begin(), s3CenterNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s3LeftNamesStr.begin(), s3LeftNamesStr.end());
+	sTextureNames.insert(sTextureNames.end(), s3RightNamesStr.begin(), s3RightNamesStr.end());
+
+	sTextureNames.insert(sTextureNames.end(), s4MainNamesStr.begin(), s4MainNamesStr.end());
 	//sTextureNames.insert(sTextureNames.end(), sVolumeSliceTextureNames2.begin(), sVolumeSliceTextureNames2.end());
+
+	dynamicTextureOffset = 15 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size()
+							+ s3TextureNamesStr.size() + sVolumeSliceTextureNames.size();
+	dynamicScenarioOffset = s1MainNamesStr.size() + s1CenterNamesStr.size() + s1LeftNamesStr.size() + s1RightNamesStr.size();
+
 	loadAllTextures(sTextureNames);
 	//loadAllTextures(sVolumeSliceTextureNames);
 
@@ -536,16 +621,32 @@ void PointCloudPTMScene::initScene(GLFWwindow *window)
 	programID_HeatMap = LoadShaders(hmVertexShaderSource, hmFragmentShaderSource);
 	programQuadID	  = LoadShaders(vertexShaderQuadSource, fragmentShaderQuadSource);
 	programFrustumID  = LoadShaders(frustumVertexShaderSource, frustumFragmentShaderSource);
+	programTextID = LoadShaders(textVertexShaderSource, textFragmentShaderSource);
 
 	glPointSize(2.0f);
 	glUseProgram(programID);
 
 	std::cout << "Init end error..: " << gluErrorString(glGetError()) << "\n";
 	std::cout << "Init end error.. " << gluErrorString(glGetError()) << "\n";
+
+	// init text here
+	text.init();
+	int iTextTextureLoc = glGetUniformLocation(programTextID, "tex");
+	text.initTexture(2, iTextTextureLoc, 0);
 }
 
 void PointCloudPTMScene::renderScene(GLFWwindow *window)
 {
+	if (slowdown == 3)
+	{
+		bRenderFrame = true;
+		slowdown = 0;
+	}
+	else
+	{
+		slowdown++;
+	}
+
 	/*if (currFrameIndex == nFrames)
 	{
 		glAccum(GL_RETURN, 1.0);
@@ -568,6 +669,27 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	glm::mat4 mModelView;
 	glm::mat4 mCurrent;
 	computeMatricesFromInputs(window);
+
+	if (bShowText)
+	{
+		// only diplay texture
+		// DEFORMATION OFF
+		glUseProgram(programTextID);
+
+		/*vboDebug.bindVBO();
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);*/
+		int iTextColorLoc = glGetUniformLocation(programTextID, "color");
+		glUniform4fv(iTextColorLoc, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+
+		float sx = 2.0f / 1920;
+		float sy = 2.0f / 1080;
+		text.bindBuffer();
+		text.render_text("The Quick Brown Fox Jumps Over The Lazy Dog",
+			-1 + 8 * sx, 1 - 50 * sy, sx, sy);
+		//glBindVertexArray(uiVAODebug);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
 
 	if (bDebugTexture)
 	{
@@ -653,20 +775,42 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 							0, 82.195, 0, 0,
 							0, 0, -1.00002, -1,
 							0, 0, -0.0200002, 0);*/
-						frustum = glm::mat4(2.1589, 0, 0, 0,
+						/*frustum = glm::mat4(2.1589, 0, 0, 0,
 							0, 3.79533, 0, 0,
+							0, 0, -1.00002, -1,
+							0, 0, -0.0200002, 0);*/
+						frustum = glm::mat4(2.11042, 0, 0, 0,
+							0, 3.71011, 0, 0,
 							0, 0, -1.00002, -1,
 							0, 0, -0.0200002, 0);
 
 
 						//pFovY = 1.39407f;
-						pFovY = 29.5218f;
+						//pFovY = 29.5218f;
+						pFovY   = 30.1693f;
+
 
 						//frustum = glm::scale(frustum, glm::vec3(-1, -1, 1));
 						//Y translation : 0.0254552
 						//yTranslation = 0.0254552f;
 						
 						//yTranslation = 0.0193368f;
+						
+						//X translation PROJ : -0.000100667
+						//	Y translation PROJ : 0.0831595
+						xTranslation = -0.000100667f;
+						yTranslation = 0.0831595f;
+						/*X translation : -6.76694e-005
+							Y translation : 0
+							Z translation : -0.0534313*/
+						xTranslation = -6.76694e-005f;
+						yTranslation = 0;
+						zTranslation = -0.0534313f;
+
+						/*X translation PROJ : 0
+							Y translation PROJ : -0.0485623
+							Z translation PROJ : 0*/
+						yTranslationPrj = 0.0359487f;
 
 						bInitFrustum = false;
 					}
@@ -940,19 +1084,395 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 						FOV29.5218
 						--===========================================--
+
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.68922, 0, 0, 0
+						0, 4.72763, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, -0, -0.999999, -0
+						-0.000157426, -0.0014962, -0.434273, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						-0.000157426, -0.0014962, -0.434273, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: 0.00224864
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: -0.172479
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV23.8866
+						--===========================================--
+
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.61531, 0, 0, 0
+						0, 4.5977, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, -9.90464e-005, -0.00113694, 0
+						0, 0.996227, -0.0867878, 0
+						-0.00114125, -0.0867877, -0.996226, -0
+						-0.00692386, 0.020099, -0.405624, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						1, -6.70624e-005, 0.000345103, 0
+						7.44927e-005, 0.999767, -0.021576, 0
+						0.000343576, -0.021576, -0.999767, 0
+						-0.00692386, 0.020099, -0.405624, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: -0.0115556
+						Y translation PROJ: -0.0300011
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: -0.172479
+						X rotation: -3.74253
+						Y rotation: 0.0849347
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV24.5415
+						--===========================================--
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.86451, 0, 0, 0
+						0, 5.0358, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						1, 0, 0, 0
+						0, 1, 0, 0
+						0, 0, 1, 0
+						0, 0, 0, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						1, 0, 0, 0
+						0, 1, 0, 0
+						0, 0, 1, 0
+						0, 0, 0, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: 0.0169763
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV22.4632
+						--===========================================--
+
+						// mda
+
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.06642, 0, 0, 0
+						0, 3.63275, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 7.94107e-005, -0.00159057, 0
+						0, 0.998756, 0.0498639, 0
+						-0.00159255, 0.0498639, -0.998755, -0
+						0.00319554, 0.0206332, -0.173297, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 7.94107e-005, -0.00159057, 0
+						0, 0.998756, 0.0498639, 0
+						-0.00159255, 0.0498639, -0.998755, 0
+						0.00319554, 0.0206332, -0.173297, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: 0.0532318
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV30.7816
+						--===========================================--
+
+
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						1.84172, 0, 0, 0
+						0, 3.23773, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 7.94107e-005, -0.00159057, 0
+						0, 0.998756, 0.0498639, 0
+						-0.00159255, 0.0498639, -0.998755, -0
+						0.00319555, 0.0154102, -0.0686823, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 7.94107e-005, -0.00159057, 0
+						0, 0.998756, 0.0498639, 0
+						-0.00159255, 0.0498639, -0.998755, 0
+						0.00319555, 0.0154102, -0.0686823, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: 0.0532318
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV34.3275
+						--===========================================--
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.29428, 0, 0, 0
+						0, 4.03334, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0,		1,		0,		0
+						-0.00159255, -0, -0.999999, -0
+						-0.0194149, 0.0437564, -0.293032, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						-0.0194149, 0.0437564, -0.293032, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: -0.0234179
+						Y translation PROJ: 0.0419882
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV27.8495
+						--===========================================--
+
+						// ...
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						1.22884, 0, 0, 0
+						0, 2.16029, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, -0, -0.999999, -0
+						0.00858576, 0.0709978, 0.201998, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00858576, 0.0709978, 0.201998, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: 0.0641581
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV49.6789
+						--===========================================--
+
+						// tired
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.11042, 0, 0, 0
+						0, 3.71011, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, -0, -0.999999, -0
+						0.00300002, 0.0874409, -0.189221, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00300002, 0.0874409, -0.189221, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: -0.000100667
+						Y translation PROJ: 0.0831595
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: 0
+						Y translation: 0
+						Z translation: 0
+
+						FOV30.1693
+						--===========================================--
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.11042, 0, 0, 0
+						0, 3.71011, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.006003, 0.0745403, -0.189221, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00593533, 0.0745403, -0.189221, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: -0.0125038
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: -6.76694e-005
+						Y translation: 0
+						Z translation: 0
+
+						FOV30.1693
+						--===========================================--
+
+						--===========================================--
+						THE PERSPECTIVE MATRIX
+						2.11042, 0, 0, 0
+						0, 3.71011, 0, 0
+						0, 0, -1.00002, -1
+						0, 0, -0.0200002, 0
+
+						THE MODELVIEW MATRIX
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00946903, 0.0357713, -0.240496, 1
+
+						THE CURRENT MATRIX (TRANSFORMED MV)
+						0.999999, 0, -0.00159255, 0
+						0, 1, 0, 0
+						-0.00159255, 0, -0.999999, 0
+						0.00948646, 0.0357713, -0.187065, 1
+
+						PROJECTOR T + R:
+						X translation PROJ: 0
+						Y translation PROJ: -0.0485623
+						Z translation PROJ: 0
+						X rotation PROJ: 0
+						Y rotation PROJ: 0
+						Z rotation PROJ: 0
+						X rotation: 0
+						Y rotation: 0
+						Z rotation: 0
+						X translation: -6.76694e-005
+						Y translation: 0
+						Z translation: -0.0534313
+
+						FOV30.1693
+						--===========================================--
 					*/
 					/*mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
 						0, 1, 0, 0,
 						- 0.00159255, 0, -0.999999, 0,
 						0.00284801, 0.0184056, -18.2686, 1);*/
-					mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
+					/*mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
 						0, 1, 0, 0,
 						- 0.00159255, -0, -0.999999, -0,
-						0.00520709, 0.00186245, -0.210023, 1);
+						0.00520709, 0.00186245, -0.210023, 1);*/
+					mModelView = glm::mat4(0.999999, 0, -0.00159255, 0,
+						0, 1, 0, 0,
+						- 0.00159255, 0, -0.999999, 0,
+						0.00946903, 0.0357713, -0.240496, 1);
 
 					
-					projectorV = glm::translate(projectorV, glm::vec3(0, yTranslation, 0));
-					yTranslation = 0;
+					//projectorV = glm::translate(projectorV, glm::vec3(xTranslation, yTranslation, zTranslation));
+					projectorV = glm::translate(projectorV, glm::vec3(xTranslationPrj, yTranslationPrj, zTranslationPrj));
+					//xTranslation = yTranslation = zTranslation = 0;
+					xTranslationPrj = yTranslationPrj = zTranslationPrj = 0;
 				}
 			}
 			else
@@ -1191,6 +1711,71 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		fRotationAngle -= 360;
 		*/
 	// RUN TASKS HERE
+
+	if (runDeformGrid && bDebugTexture && bRenderFrame && started)
+	{
+		if (dynamicTextureOffset - 1 + s1Cnt < dynamicTextureOffset - 1 + s1MainNamesStr.size() - 1)
+		{
+			loopFrames(dynamicTextureOffset - 1 + s1Cnt, dynamicTextureOffset - 1 + s1MainNamesStr.size());
+			s1Cnt++;
+		}
+		else
+		{
+			s1Cnt = 0;
+			loopFrames(dynamicTextureOffset + s1Cnt, dynamicTextureOffset + s1MainNamesStr.size());
+		}
+
+		bRenderFrame = false;
+	}
+
+	if (runDeformText && bDebugTexture && bRenderFrame && started)
+	{
+		if (dynamicTextureOffset - 1 + dynamicScenarioOffset + s2Cnt < dynamicTextureOffset - 1 + dynamicScenarioOffset + s2MainNamesStr.size() - 1)
+		{
+			loopFrames(dynamicTextureOffset - 1 + dynamicScenarioOffset + s2Cnt, dynamicTextureOffset - 1 + dynamicScenarioOffset + s2MainNamesStr.size());
+			s2Cnt++;
+		}
+		else
+		{
+			s2Cnt = 0;
+			loopFrames(dynamicTextureOffset + dynamicScenarioOffset + s2Cnt, dynamicTextureOffset + dynamicScenarioOffset + s2MainNamesStr.size());
+		}
+
+		bRenderFrame = false;
+	}
+
+	if (runDeformScene && bDebugTexture && bRenderFrame && started)
+	{
+		if (dynamicTextureOffset - 1 + dynamicScenarioOffset*2 + s3Cnt < dynamicTextureOffset - 1 + dynamicScenarioOffset * 2 + s3MainNamesStr.size() - 1)
+		{
+			loopFrames(dynamicTextureOffset - 1 + dynamicScenarioOffset*2 + s3Cnt, dynamicTextureOffset - 1 + dynamicScenarioOffset * 2 + s3MainNamesStr.size());
+			s3Cnt++;
+		}
+		else
+		{
+			s3Cnt = 0;
+			loopFrames(dynamicTextureOffset + dynamicScenarioOffset*2 + s3Cnt, dynamicTextureOffset + dynamicScenarioOffset * 2 + s3MainNamesStr.size());
+		}
+
+		bRenderFrame = false;
+	}
+
+	if (runGoogleMap && bDebugTexture && bRenderFrame)
+	{
+		if (dynamicTextureOffset - 1 + dynamicScenarioOffset*3 + s4Cnt < dynamicTextureOffset - 1 + dynamicScenarioOffset * 3 + s4MainNamesStr.size() - 1)
+		{
+			loopFrames(dynamicTextureOffset - 1 + dynamicScenarioOffset*3 + s4Cnt, dynamicTextureOffset - 1 + dynamicScenarioOffset * 3 + s4MainNamesStr.size());
+			s4Cnt++;
+		}
+		else
+		{
+			s4Cnt = 0;
+			loopFrames(dynamicTextureOffset + dynamicScenarioOffset*3 + s4Cnt, dynamicTextureOffset + dynamicScenarioOffset * 3 + s4MainNamesStr.size());
+		}
+
+		bRenderFrame = false;
+	}
+
 	if (runDeformText)
 	{
 
@@ -1355,7 +1940,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			//cout << "depth = " << depth << " at pixel (" << 1920 / 2 << ", " << 1080 / 2 << ")" << endl;
 			depthDiff = initDepth - depth;
 
-			activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
+			//activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
 			//if(activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size())
 			//	activeTextureIndex++;
 
@@ -1389,7 +1974,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			//if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size() + 1)
 			//	activeTextureIndex--;
-			activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
+			//activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
 
 			/*if (depthDiff > volumeSliceStep)
 			{
@@ -1548,8 +2133,16 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				(pos[rdp->indices[i + 2]].x > -10000 && pos[rdp->indices[i + 2]].x < 10000 &&
 				pos[rdp->indices[i + 2]].z > -10000 && pos[rdp->indices[i + 2]].z < 10000 && pos[rdp->indices[i + 2]].y > -10000 && pos[rdp->indices[i + 2]].y < 10000))
 			{
-				// faces start at 1 in .obj files, so we need to add 1 to all indices
-				outputMesh << "f " << (rdp->indices[i] + 1) << " " << (rdp->indices[i + 1] + 1) << " " << (rdp->indices[i + 2] + 1) << "\n";
+				if (i & 1)
+				{
+					// faces start at 1 in .obj files, so we need to add 1 to all indices
+					outputMesh << "f " << (rdp->indices[i] + 1) << " " << (rdp->indices[i + 1] + 1) << " " << (rdp->indices[i + 2] + 1) << "\n";
+				}
+				else
+				{
+					// faces start at 1 in .obj files, so we need to add 1 to all indices
+					outputMesh << "f " << (rdp->indices[i] + 1) << " " << (rdp->indices[i + 2] + 1) << " " << (rdp->indices[i + 1] + 1) << "\n";
+				}	
 			}		
 		}
 
@@ -1701,6 +2294,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			// RESET STATES
 			if (runVolumeSlicing || runGoogleMap || runDeformScene || runDeformText || runDeformGrid)
 			{
+				started = true;
 				if (!runVolumeSlicing)
 				{
 					initDepthState = true;
@@ -1711,7 +2305,15 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				//	activeTextureIndex = 12;
 				if (runDeformText)
 				{
-					activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
+					if (!bDebugTexture)
+					{
+						activeTextureIndex = 16 + s1TextureNamesStr.size();
+					}
+					if (bDebugTexture)
+					{
+						s2Cnt = 0;
+					}
+				
 					/*if (activeTextureIndex == 16 + s1TextureNamesStr.size())
 						activeTextureIndex++;
 					else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + 1)
@@ -1721,7 +2323,15 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				}
 				if (runDeformScene)
 				{
-					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
+					if (!bDebugTexture)
+					{
+						activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
+					}
+					if (bDebugTexture)
+					{
+						s3Cnt = 0;
+					}
+				
 					/*if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size())
 						activeTextureIndex++;
 					else if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1)
@@ -1731,13 +2341,38 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				}
 				if (runDeformGrid)
 				{
-					activeTextureIndex = 16 + 1;
+					if (!bDebugTexture)
+					{
+						activeTextureIndex = 16;
+					}
+					if (bDebugTexture)
+					{
+						s1Cnt = 0;
+					}
+					/*if (!bDebugTexture)
+						activeTextureIndex = 16 + 1;
+					else
+					{
+						//loopFrames(dynamicTextureOffset, dynamicTextureOffset + s1MainNamesStr.size());
+					}*/
 					/*if (activeTextureIndex == 16)
 						activeTextureIndex++;
 					else if (activeTextureIndex == 16 + 1)
 					{
 						activeTextureIndex--;
 					}*/
+				}
+
+				if (runGoogleMap)
+				{
+					if (!bDebugTexture)
+					{
+						activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + s3TextureNamesStr.size();
+					}
+					if (bDebugTexture)
+					{
+						s4Cnt = 0;
+					}
 				}
 			
 			}
@@ -1755,8 +2390,15 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		{
 			if (runDeformText)
 			{
-				if (activeTextureIndex >= 16 + s1TextureNamesStr.size() + 1)
-					activeTextureIndex = 16 + s1TextureNamesStr.size();
+				if (!bDebugTexture)
+				{
+					if (activeTextureIndex >= 16 + s1TextureNamesStr.size() + 1)
+						activeTextureIndex = 16 + s1TextureNamesStr.size();
+				}
+				else
+				{
+					started = true;
+				}
 				/*if(activeTextureIndex == 16 + s1TextureNamesStr.size() + 3)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + 1;
@@ -1776,8 +2418,16 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			}
 			else if (runDeformScene)
 			{
-				if (activeTextureIndex > 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size())
-					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
+				if (!bDebugTexture)
+				{
+					if (activeTextureIndex > 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size())
+						activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
+				}
+				else
+				{
+					started = true;
+				}
+				
 				/*if (activeTextureIndex == 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 3)
 				{
 					activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size();
@@ -1801,8 +2451,16 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 			}
 			else if (runDeformGrid)
 			{
-				if (activeTextureIndex > 16)
-					activeTextureIndex = 16;
+				if (!bDebugTexture)
+				{
+					if (activeTextureIndex > 16)
+						activeTextureIndex = 16;
+				}
+				else
+				{
+					started = true;
+				}
+				
 				/*if (activeTextureIndex == 16 + 3)
 				{
 					activeTextureIndex = 16 + 1;
@@ -1834,6 +2492,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	{
 		if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_0) != GLFW_RELEASE)
 		{
+			started = false;
 			if (runDeformText)
 			{
 				if (s2Counter == 0)
@@ -2297,7 +2956,12 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F1) != GLFW_RELEASE)
 			{
-				randomizeDistortionState(100);
+				started = false;
+				if (bAIsFirst)
+					bDebugTexture = false;
+				else
+					bDebugTexture = true;
+				//randomizeDistortionState(100);
 				// make sure we do not run other states
 				runGoogleMap = false;
 				runVolumeSlicing = false;
@@ -2324,11 +2988,18 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F2) != GLFW_RELEASE)
 			{
-				randomizeDistortionState(100);
+				started = false;
+				if (bAIsFirst)
+					bDebugTexture = false;
+				else
+					bDebugTexture = true;
+
+				//randomizeDistortionState(100);
 				// make sure we do not run other states
+				runDeformText = true;
+
 				runGoogleMap = false;
 				runVolumeSlicing = false;
-				runDeformText = true;
 				runDeformScene = false;
 				runDeformGrid = false;
 				//init
@@ -2347,17 +3018,24 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		// TASK 3
 		if (timer >= 0.25f)
 		{
-
+		
 			if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F3) != GLFW_RELEASE)
 			{
-				randomizeDistortionState(100);
+				started = false;
+				if (bAIsFirst)
+					bDebugTexture = false;
+				else
+					bDebugTexture = true;
+
+				//randomizeDistortionState(100);
 				// make sure we do not run other states
 				runDeformScene = true;
+
 				runVolumeSlicing = false;
 				runDeformText = false;
 				runGoogleMap = false;
 				runDeformGrid = false;
-				runDeformGrid = false;
+				
 				//init
 				activeTextureIndex = 16 + s1TextureNamesStr.size() + s2TextureNamesStr.size() + 1;
 				initDepthState = true;
@@ -2373,10 +3051,14 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 		// TASK 4
 		if (timer >= 0.25f)
 		{
-			
 			if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F4) != GLFW_RELEASE)
 			{
-				randomizeDistortionState(100);
+				started = false;
+				if (bAIsFirst)
+					bDebugTexture = false;
+				else
+					bDebugTexture = true;
+				//randomizeDistortionState(100);
 				
 				// make sure we do not run other states
 				runDeformScene = false;
@@ -2403,7 +3085,11 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 			if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_F5) != GLFW_RELEASE)
 			{
-				randomizeDistortionState(100);
+				if (bAIsFirst)
+					bDebugTexture = false;
+				else
+					bDebugTexture = true;
+				//randomizeDistortionState(100);
 				// make sure we do not run other states
 				runDeformScene = false;
 				runGoogleMap = false;
@@ -2496,6 +3182,15 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 
 		if (timer >= 0.25f)
 		{
+			if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_G) != GLFW_RELEASE)
+			{
+				bAIsFirst = !bAIsFirst;
+				timer = 0;
+			}
+		}
+
+		if (timer >= 0.25f)
+		{
 			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_RELEASE)
 			{
 				cout << "MOUSE1 ACTION" << endl;
@@ -2513,6 +3208,19 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 				timer = 0;
 			}
 		}
+
+
+		if (timer >= 0.25f)
+		{
+			if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_X) != GLFW_RELEASE)
+			{
+				bShowText = !bShowText;
+
+				timer = 0;
+			}
+		}
+
+
 	// end user interaction
 
 		/*
@@ -2521,7 +3229,7 @@ void PointCloudPTMScene::renderScene(GLFWwindow *window)
 	// Poll for and process events
 	glfwPollEvents();
 	*/
-	pipeline->updateTimer();
+	pipeline->updateTimer(bShowText);
 }
 
 void PointCloudPTMScene::releaseScene()
@@ -2738,4 +3446,31 @@ void PointCloudPTMScene::randomizeDistortionState(int bound)
 		bDebugTexture = false;
 	else
 		bDebugTexture = true;
+}
+
+void PointCloudPTMScene::readTextureNames(string baseName, const char* target[], int iter)
+{
+	string *s;
+	char numstr[21]; // enough to hold all numbers up to 64-bits
+	for (int i = 0; i < 10; i++)
+	{
+
+		s = new string(baseName + string(_itoa(i, numstr, 10)) + ".jpg");
+		//strcpy(cVolumeSliceNames[i], s.c_str());
+		target[i] = s->c_str();
+		//cVolumeSliceNames[i] = "brain/brain_0" + i;
+
+	}
+}
+
+void PointCloudPTMScene::loopFrames(int begin, int end)
+{
+	//while (bDebugTexture)
+	//{
+		activeTextureIndex = begin;
+		/*for (int i = 0; i < end; i++)
+		{
+			activeTextureIndex++;
+		}*/
+	//}
 }

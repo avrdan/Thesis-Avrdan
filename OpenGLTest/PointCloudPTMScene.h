@@ -2,6 +2,8 @@
 #include "simpleScene.h"
 #include "RawDepthPipeline.h"
 
+#include "text.h"
+
 class PointCloudPTMScene :
 	public AbstractScene
 {
@@ -37,6 +39,8 @@ private:
 	const char* fragmentShaderQuadSource;
 	const char* frustumVertexShaderSource;
 	const char* frustumFragmentShaderSource;
+	const char* textVertexShaderSource;
+	const char* textFragmentShaderSource;
 
 	char* sphereModel;
 	char* sphereHalfModelPro;
@@ -45,6 +49,7 @@ private:
 	GLuint programColorID;
 	GLuint programQuadID;
 	GLuint programFrustumID;
+	GLuint programTextID;
 	Pipeline *pipeline;
 	RawDepthPipeline* rdp;
 
@@ -179,6 +184,26 @@ private:
 	vector<string> s3TextureNamesStr;
 	vector<string> s4TextureNamesStr;
 	vector<string> sVolumeSliceTextureNames;
+
+	// dynamic textures
+	vector<string> s1MainNamesStr;
+	vector<string> s1CenterNamesStr;
+	vector<string> s1LeftNamesStr;
+	vector<string> s1RightNamesStr;
+
+	vector<string> s2MainNamesStr;
+	vector<string> s2CenterNamesStr;
+	vector<string> s2LeftNamesStr;
+	vector<string> s2RightNamesStr;
+
+	vector<string> s3MainNamesStr;
+	vector<string> s3CenterNamesStr;
+	vector<string> s3LeftNamesStr;
+	vector<string> s3RightNamesStr;
+
+	vector<string> s4MainNamesStr;
+
+
 	//vector<string> sVolumeSliceTextureNames2;
 
 	int s2Counter;
@@ -187,5 +212,39 @@ private:
 
 	bool useMedianFiltering;
 	bool useWeightedMovingAverage;
+
+	Text text;
+	bool bShowText;
+
+	void readTextureNames(string baseName, const char* target[], int iter);
+	void loopFrames(int begin, int end);
+
+	int dynamicTextureOffset;
+	int dynamicScenarioOffset;
+
+
+	int s1Cnt;
+	int s2Cnt;
+	int s3Cnt;
+	int s4Cnt;
+	int s1MainCnt;
+	int s1CenterCnt;
+	int s1LeftCnt;
+	int s1RightCnt;
+	int s2MainCnt;
+	int s2CenterCnt;
+	int s2LeftCnt;
+	int s2RightCnt;
+	int s3MainCnt;
+	int s3CenterCnt;
+	int s3LeftCnt;
+	int s3RightCnt;
+	int s4MainCnt;
+
+	bool bAIsFirst;
+	int slowdown;
+	bool bRenderFrame;
+
+	bool started;
 };
 

@@ -42,6 +42,7 @@
     <Import Project="FreeImage.props" />
     <Import Project="PCSDK_Debug.props" />
     <Import Project="PCL32_Debug.props" />
+    <Import Project="FreeType.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -65,12 +66,14 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,6 +134,7 @@
     <ClCompile Include="shadowMappingScene.cpp" />
     <ClCompile Include="simpleScene.cpp" />
     <ClCompile Include="static_geometry.cpp" />
+    <ClCompile Include="text.cpp" />
     <ClCompile Include="textureScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +168,7 @@
     <ClInclude Include="shadowMappingScene.h" />
     <ClInclude Include="simpleScene.h" />
     <ClInclude Include="static_geometry.h" />
+    <ClInclude Include="text.h" />
     <ClInclude Include="textureScene.h" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +214,8 @@
     <None Include="assets\shaders\simple.frag" />
     <None Include="assets\shaders\simple.vert" />
     <None Include="assets\shaders\simpleTexture.frag" />
+    <None Include="assets\shaders\text.frag" />
+    <None Include="assets\shaders\text.vert" />
     <None Include="assets\volume\bonsai.raw" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

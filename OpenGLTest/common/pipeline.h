@@ -20,7 +20,7 @@ public:
 	glm::mat4* getProjectionMatrix();
 
 	void resetTimer();
-	void updateTimer();
+	void updateTimer(bool show = false);
 	// speed optimized float
 	float sof(float fVal);
 
@@ -31,6 +31,7 @@ public:
 private:
 	int iFPSCount, iCurrentFPS;
 	clock_t tLastSecond;
+	float totalFrameInterval;
 
 	glm::mat4 mProjection;
 

@@ -90,7 +90,7 @@ RawDepthPipeline::RawDepthPipeline()
 	//addIndexDataTriangles();
 	//addIndexDataTriangleStrip();
 	nSize = 5;
-	averageFrameCount = 10;
+	averageFrameCount = 20;
 }
 
 
